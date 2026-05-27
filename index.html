@@ -13,24 +13,19 @@
                 let cena = this.el.sceneEl;
                 
                 this.el.addEventListener('click', function (evento) {
-                    // Descobre exatamente onde a mira bateu
                     let ponto = evento.detail.intersection.point;
                     let normal = evento.detail.intersection.face.normal;
 
-                    // Matemática para encaixar o bloco perfeitamente no Grid
                     let x = Math.floor(ponto.x + normal.x * 0.5) + 0.5;
                     let y = Math.floor(ponto.y + normal.y * 0.5) + 0.5;
                     let z = Math.floor(ponto.z + normal.z * 0.5) + 0.5;
 
-                    // Cria o bloco e joga no mundo
                     let bloco = document.createElement('a-box');
                     bloco.setAttribute('position', `${x} ${y} ${z}`);
                     
-                    // Sorteia a cor: Verde (Grama) ou Marrom (Terra)
                     let cor = Math.random() > 0.5 ? '#228B22' : '#8B4513';
                     bloco.setAttribute('color', cor);
                     
-                    // Faz o novo bloco também ter o poder de construir
                     bloco.setAttribute('construtor-de-blocos', ''); 
                     
                     cena.appendChild(bloco);
@@ -43,7 +38,7 @@
         body {
             background-color: #141414;
             color: #ffffff;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
@@ -80,7 +75,7 @@
             gap: 30px;
             margin-top: 50px;
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
         }
 
         .game-card {
@@ -88,34 +83,35 @@
             border: 2px solid #333;
             border-radius: 10px;
             padding: 20px;
-            width: 300px;
+            width: 280px;
             text-align: center;
             cursor: pointer;
             transition: 0.3s;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
-        .game-card:hover {
-            transform: translateY(-10px);
-            border-color: #3f48cc;
-        }
+        .game-card:hover { transform: translateY(-10px); }
+        .game-card.snake-card:hover { border-color: #3f48cc; }
+        .game-card.mc-card:hover { border-color: #27ae60; }
+        .game-card.flappy-card:hover { border-color: #f1c40f; }
 
-        .game-card.mc-card:hover {
-            border-color: #27ae60;
-        }
+        .game-card h2 { margin: 0 0 10px 0; }
+        .game-card.snake-card h2 { color: #3f48cc; }
+        .game-card.mc-card h2 { color: #27ae60; }
+        .game-card.flappy-card h2 { color: #f1c40f; }
 
-        .game-card h2 {
-            margin: 0 0 10px 0;
-            color: #3f48cc;
-        }
-        
-        .game-card.mc-card h2 {
-            color: #27ae60;
-        }
+        .game-card p { font-size: 0.9rem; color: #bbb; }
 
-        .game-card p {
-            font-size: 0.9rem;
-            color: #bbb;
+        /* Banner ilustrativo das cartas */
+        .card-banner {
+            height: 150px;
+            width: 100%;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 50px;
         }
 
         /* --- CONTAINERS DOS JOGOS --- */
@@ -137,7 +133,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
-        canvas {
+        #snakeCanvas {
             border: 4px solid #333;
             display: block;
             border-radius: 5px;
@@ -155,20 +151,60 @@
             position: relative;
         }
 
+        /* Container Flappy Bird */
+        #game-container-flappy {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            border: 4px solid #fff;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+            overflow: hidden;
+        }
+
+        #flappyCanvas {
+            display: block;
+            border-radius: 4px;
+        }
+
+        /* Menus do Flappy Bird */
+        .menu-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background-color: rgba(0, 0, 0, 0.4);
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            transition: opacity 0.3s;
+        }
+        .hidden { display: none !important; }
+        .menu-overlay h1, .menu-overlay h2 { margin: 0 0 10px 0; font-size: 36px; }
+        .menu-overlay p { margin: 0 0 20px 0; font-size: 18px; }
+
+        #restart-btn {
+            padding: 12px 24px; font-size: 18px; font-weight: bold;
+            color: white; background-color: #e74c3c;
+            border: 2px solid #c0392b; border-radius: 8px;
+            cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.1s, background-color 0.2s;
+        }
+        #restart-btn:hover { background-color: #c0392b; }
+        #restart-btn:active { transform: scale(0.95); }
+
+        /* Botão Global de Voltar */
         .voltar-btn {
             margin-top: 20px;
             padding: 10px 20px;
-            background-color: #ed1c24;
+            background-color: #333;
             color: white;
-            border: none;
+            border: 2px solid #555;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
         }
-
-        .voltar-btn:hover {
-            background-color: #c0392b;
-        }
+        .voltar-btn:hover { background-color: #555; }
 
         .footer {
             margin-top: auto;
@@ -186,20 +222,22 @@
     </header>
 
     <div id="game-selector">
-        <div class="game-card" onclick="abrirJogo('snake')">
-            <div style="background-color:#a2d149; height: 180px; width: 100%; border-radius: 5px; display:flex; align-items:center; justify-content:center; margin-bottom:15px;">
-                <span style="font-size: 50px;">🍎🐍</span>
-            </div>
-            <h2>THE SNAKE GAME</h2>
-            <p>A clássica cobrinha azul da Garcia Productions! Jogue diretamente aqui no navegador.</p>
+        <div class="game-card snake-card" onclick="abrirJogo('snake')">
+            <div class="card-banner" style="background-color:#a2d149;">🍎🐍</div>
+            <h2>SNAKE GAME</h2>
+            <p>A clássica cobrinha redonda. Jogue no navegador.</p>
         </div>
 
         <div class="game-card mc-card" onclick="abrirJogo('pythoncraft')">
-            <div style="background-color:#27ae60; height: 180px; width: 100%; border-radius: 5px; display:flex; align-items:center; justify-content:center; margin-bottom:15px;">
-                <span style="font-size: 50px;">⛏️🌲</span>
-            </div>
-            <h2>PYTHONCRAFT WEB</h2>
-            <p>Construa seu mundo em 3D. Use W, A, S, D para andar e o Mouse para construir!</p>
+            <div class="card-banner" style="background-color:#27ae60;">⛏️🌲</div>
+            <h2>PYTHONCRAFT</h2>
+            <p>Construa seu mundo em 3D. Realidade Virtual Web.</p>
+        </div>
+
+        <div class="game-card flappy-card" onclick="abrirJogo('flappy')">
+            <div class="card-banner" style="background-color:#87CEEB;">🐦💨</div>
+            <h2>FLAPPY BIRD</h2>
+            <p>Passe pelos canos sem bater. Teste sua paciência!</p>
         </div>
     </div>
 
@@ -207,27 +245,38 @@
         <div id="game-container-snake">
             <canvas id="snakeCanvas" width="600" height="400"></canvas>
         </div>
-        <p style="color:#bbb; font-size:0.9rem;">Use as <strong>Setas do Teclado</strong> para controlar a cobra redondinha!</p>
+        <p style="color:#bbb; font-size:0.9rem;">Use as <strong>Setas do Teclado</strong> para controlar a cobra!</p>
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
     <div class="container" id="tela-pythoncraft">
         <p style="color:#27ae60; font-weight:bold; margin-top:0;">Use W, A, S, D para andar e Clique para colocar blocos. Clique e arraste para olhar.</p>
-        
         <div id="game-container-pythoncraft">
             <a-scene embedded>
                 <a-sky color="#87CEEB"></a-sky>
                 <a-plane position="0 0 0" rotation="-90 0 0" width="100" height="100" color="#3CB371" construtor-de-blocos></a-plane>
                 <a-entity camera look-controls wasd-controls="acceleration: 20" position="0 1.6 0">
-                    <a-entity cursor="fuse: false;"
-                              position="0 0 -1"
-                              geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.02"
-                              material="color: black; shader: flat">
-                    </a-entity>
+                    <a-entity cursor="fuse: false;" position="0 0 -1" geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.02" material="color: black; shader: flat"></a-entity>
                 </a-entity>
             </a-scene>
         </div>
+        <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
+    </div>
 
+    <div class="container" id="tela-flappy">
+        <div id="game-container-flappy">
+            <canvas id="flappyCanvas" width="400" height="500"></canvas>
+            
+            <div id="start-menu-flappy" class="menu-overlay">
+                <h1>Flappy Bird</h1>
+                <p>Clique ou aperte Espaço</p>
+            </div>
+            <div id="game-over-menu-flappy" class="menu-overlay hidden">
+                <h2>Você Desviveu!</h2>
+                <p id="final-score-flappy">Placar: 0</p>
+                <button id="restart-btn">Reiniciar Jogo</button>
+            </div>
+        </div>
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
@@ -241,185 +290,219 @@
             
             if (jogo === 'snake') {
                 document.getElementById('tela-snake').style.display = 'flex';
-                document.getElementById('header-subtitle').innerText = "THE SNAKE GAME — VERSÃO WEB";
+                document.getElementById('header-subtitle').innerText = "THE SNAKE GAME";
                 iniciarLoopSnakeSeNecessario();
             } else if (jogo === 'pythoncraft') {
                 document.getElementById('tela-pythoncraft').style.display = 'flex';
-                document.getElementById('header-subtitle').innerText = "PYTHONCRAFT — VERSÃO WEB";
-                
-                // Força o A-Frame a recalcular o tamanho da tela quando ele aparece
-                setTimeout(() => {
-                    window.dispatchEvent(new Event('resize'));
-                }, 100);
+                document.getElementById('header-subtitle').innerText = "PYTHONCRAFT 3D";
+                setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+            } else if (jogo === 'flappy') {
+                document.getElementById('tela-flappy').style.display = 'flex';
+                document.getElementById('header-subtitle').innerText = "FLAPPY BIRD";
+                iniciarLoopFlappySeNecessario();
             }
         }
 
         function voltarAoMenu() {
             document.getElementById('tela-snake').style.display = 'none';
             document.getElementById('tela-pythoncraft').style.display = 'none';
+            document.getElementById('tela-flappy').style.display = 'none';
+            
             document.getElementById('game-selector').style.display = 'flex';
             document.getElementById('header-subtitle').innerText = "ESCOLHA O SEU JOGO";
             
-            if (estadoJogo === 'JOGANDO') {
-                estadoJogo = 'MENU';
-            }
+            // Pausa a cobrinha
+            if (estadoJogoSnake === 'JOGANDO') estadoJogoSnake = 'MENU';
+            
+            // Pausa o Flappy Bird
+            if (gameStateFlappy === 'PLAYING') triggerGameOverFlappy();
         }
     </script>
 
     <script>
-        const canvas = document.getElementById("snakeCanvas");
-        const ctx = canvas.getContext("2d");
+        const snakeCanvas = document.getElementById("snakeCanvas");
+        const ctxSnake = snakeCanvas.getContext("2d");
 
         const TAMANHO_BLOCO = 20;
-        const VELOCIDADE = 100; 
-        const VERDE_GRAMA_CLARO = "#aaf751";
-        const VERDE_GRAMA_ESCURO = "#a2d149";
-        const COR_COBRA = "#3f48cc";
-        const COR_COMIDA = "#ed1c24";
-
-        let estadoJogo = 'MENU';
+        const VELOCIDADE_SNAKE = 100; 
+        let estadoJogoSnake = 'MENU';
         let cobra = [];
-        let direcaoX = TAMANHO_BLOCO;
-        let direcaoY = 0;
+        let direcaoX = TAMANHO_BLOCO; let direcaoY = 0;
         let comida = {x: 0, y: 0};
-        let pontuacao = 0;
+        let pontuacaoSnake = 0;
         let mudouDirecaoNesteFrame = false;
-        let loopRodando = false;
+        let loopSnakeRodando = false;
 
-        function iniciarJogo() {
-            let inicioX = canvas.width / 2;
-            let inicioY = canvas.height / 2;
+        function iniciarJogoSnake() {
+            let inicioX = snakeCanvas.width / 2; let inicioY = snakeCanvas.height / 2;
             cobra = [{x: inicioX, y: inicioY}, {x: inicioX - TAMANHO_BLOCO, y: inicioY}];
-            direcaoX = TAMANHO_BLOCO;
-            direcaoY = 0;
-            pontuacao = 0;
-            gerarComida();
-            estadoJogo = 'JOGANDO';
+            direcaoX = TAMANHO_BLOCO; direcaoY = 0; pontuacaoSnake = 0;
+            gerarComidaSnake(); estadoJogoSnake = 'JOGANDO';
         }
 
-        function gerarComida() {
+        function gerarComidaSnake() {
             while (true) {
-                let x = Math.floor(Math.random() * (canvas.width / TAMANHO_BLOCO)) * TAMANHO_BLOCO;
-                let y = Math.floor(Math.random() * (canvas.height / TAMANHO_BLOCO)) * TAMANHO_BLOCO;
-                if (!cobra.some(b => b.x === x && b.y === y)) {
-                    comida = {x: x, y: y};
-                    break;
-                }
+                let x = Math.floor(Math.random() * (snakeCanvas.width / TAMANHO_BLOCO)) * TAMANHO_BLOCO;
+                let y = Math.floor(Math.random() * (snakeCanvas.height / TAMANHO_BLOCO)) * TAMANHO_BLOCO;
+                if (!cobra.some(b => b.x === x && b.y === y)) { comida = {x: x, y: y}; break; }
             }
         }
 
-        function desenharFundoXadrez() {
-            let numBlocosH = canvas.width / TAMANHO_BLOCO;
-            let numBlocosV = canvas.height / TAMANHO_BLOCO;
-            for (let linha = 0; linha < numBlocosV; linha++) {
-                for (let col = 0; col < numBlocosH; col++) {
-                    ctx.fillStyle = (linha + col) % 2 === 0 ? VERDE_GRAMA_CLARO : VERDE_GRAMA_ESCURO;
-                    ctx.fillRect(col * TAMANHO_BLOCO, linha * TAMANHO_BLOCO, TAMANHO_BLOCO, TAMANHO_BLOCO);
-                }
-            }
-        }
-
-        function loopJogo() {
+        function loopSnake() {
             mudouDirecaoNesteFrame = false;
-
-            if (estadoJogo === 'MENU') {
-                ctx.fillStyle = "#1e1e1e"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#ffffff"; ctx.font = "bold 35px Arial"; ctx.textAlign = "center";
-                ctx.fillText("THE SNAKE GAME", canvas.width / 2, 160);
-                ctx.fillStyle = "#aaf751"; ctx.font = "bold 20px Arial";
-                ctx.fillText("GARCIA PRODUCTIONS", canvas.width / 2, 200);
-                ctx.fillStyle = "#3498db"; ctx.fillRect(canvas.width / 2 - 90, 250, 180, 50);
-                ctx.fillStyle = "#ffffff"; ctx.font = "bold 20px Arial";
-                ctx.fillText("PLAY NOW!", canvas.width / 2, 282);
-
-            } else if (estadoJogo === 'JOGANDO') {
+            if (estadoJogoSnake === 'MENU') {
+                ctxSnake.fillStyle = "#1e1e1e"; ctxSnake.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+                ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 35px Arial"; ctxSnake.textAlign = "center";
+                ctxSnake.fillText("SNAKE GAME", snakeCanvas.width / 2, 160);
+                ctxSnake.fillStyle = "#3498db"; ctxSnake.fillRect(snakeCanvas.width / 2 - 90, 250, 180, 50);
+                ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 20px Arial"; ctxSnake.fillText("PLAY NOW!", snakeCanvas.width / 2, 282);
+            } else if (estadoJogoSnake === 'JOGANDO') {
                 let novaCabeca = {x: cobra[0].x + direcaoX, y: cobra[0].y + direcaoY};
-
-                if (novaCabeca.x < 0 || novaCabeca.x >= canvas.width || novaCabeca.y < 0 || novaCabeca.y >= canvas.height ||
-                    cobra.some(b => b.x === novaCabeca.x && b.y === novaCabeca.y)) {
-                    estadoJogo = 'GAMEOVER'; setTimeout(loopJogo, VELOCIDADE); return;
+                if (novaCabeca.x < 0 || novaCabeca.x >= snakeCanvas.width || novaCabeca.y < 0 || novaCabeca.y >= snakeCanvas.height || cobra.some(b => b.x === novaCabeca.x && b.y === novaCabeca.y)) {
+                    estadoJogoSnake = 'GAMEOVER'; setTimeout(loopSnake, VELOCIDADE_SNAKE); return;
                 }
-
                 cobra.unshift(novaCabeca);
-                if (novaCabeca.x === comida.x && novaCabeca.y === comida.y) {
-                    pontuacao++; gerarComida();
-                } else { cobra.pop(); }
+                if (novaCabeca.x === comida.x && novaCabeca.y === comida.y) { pontuacaoSnake++; gerarComidaSnake(); } else { cobra.pop(); }
 
-                desenharFundoXadrez();
-                ctx.fillStyle = COR_COMIDA; ctx.beginPath(); ctx.arc(comida.x + 10, comida.y + 10, 10, 0, 2 * Math.PI); ctx.fill();
-                ctx.fillStyle = "#228B22"; ctx.fillRect(comida.x + 9, comida.y + 1, 2, 4);
-
-                cobra.forEach((bloco, index) => {
-                    ctx.fillStyle = "#000000"; ctx.beginPath(); ctx.arc(bloco.x + 10, bloco.y + 10, 10, 0, 2 * Math.PI); ctx.fill();
-                    ctx.fillStyle = COR_COBRA; ctx.beginPath(); ctx.arc(bloco.x + 10, bloco.y + 10, 9, 0, 2 * Math.PI); ctx.fill();
-                    if (index === 0) {
-                        ctx.fillStyle = "#ffffff";
-                        let olho1 = {x: 0, y: 0}, olho2 = {x: 0, y: 0}, pupila1 = {x: 0, y: 0}, pupila2 = {x: 0, y: 0};
-                        if (direcaoX > 0) {
-                            olho1 = {x: bloco.x + 14, y: bloco.y + 6}; olho2 = {x: bloco.x + 14, y: bloco.y + 14}; pupila1 = {x: bloco.x + 15, y: bloco.y + 6}; pupila2 = {x: bloco.x + 15, y: bloco.y + 14};
-                        } else if (direcaoX < 0) {
-                            olho1 = {x: bloco.x + 6, y: bloco.y + 6}; olho2 = {x: bloco.x + 6, y: bloco.y + 14}; pupila1 = {x: bloco.x + 5, y: bloco.y + 6}; pupila2 = {x: bloco.x + 5, y: bloco.y + 14};
-                        } else if (direcaoY < 0) {
-                            olho1 = {x: bloco.x + 6, y: bloco.y + 6}; olho2 = {x: bloco.x + 14, y: bloco.y + 6}; pupila1 = {x: bloco.x + 6, y: bloco.y + 5}; pupila2 = {x: bloco.x + 14, y: bloco.y + 5};
-                        } else if (direcaoY > 0) {
-                            olho1 = {x: bloco.x + 6, y: bloco.y + 14}; olho2 = {x: bloco.x + 14, y: bloco.y + 14}; pupila1 = {x: bloco.x + 6, y: bloco.y + 15}; pupila2 = {x: bloco.x + 14, y: bloco.y + 15};
-                        }
-                        ctx.beginPath(); ctx.arc(olho1.x, olho1.y, 4, 0, 2 * Math.PI); ctx.fill();
-                        ctx.beginPath(); ctx.arc(olho2.x, olho2.y, 4, 0, 2 * Math.PI); ctx.fill();
-                        ctx.fillStyle = "#000000";
-                        ctx.beginPath(); ctx.arc(pupila1.x, pupila1.y, 1.5, 0, 2 * Math.PI); ctx.fill();
-                        ctx.beginPath(); ctx.arc(pupila2.x, pupila2.y, 1.5, 0, 2 * Math.PI); ctx.fill();
+                for (let linha = 0; linha < snakeCanvas.height/TAMANHO_BLOCO; linha++) {
+                    for (let col = 0; col < snakeCanvas.width/TAMANHO_BLOCO; col++) {
+                        ctxSnake.fillStyle = (linha + col) % 2 === 0 ? "#aaf751" : "#a2d149";
+                        ctxSnake.fillRect(col * TAMANHO_BLOCO, linha * TAMANHO_BLOCO, TAMANHO_BLOCO, TAMANHO_BLOCO);
                     }
+                }
+                ctxSnake.fillStyle = "#ed1c24"; ctxSnake.beginPath(); ctxSnake.arc(comida.x + 10, comida.y + 10, 10, 0, 2 * Math.PI); ctxSnake.fill();
+                cobra.forEach((bloco, i) => {
+                    ctxSnake.fillStyle = "#000000"; ctxSnake.beginPath(); ctxSnake.arc(bloco.x + 10, bloco.y + 10, 10, 0, 2 * Math.PI); ctxSnake.fill();
+                    ctxSnake.fillStyle = "#3f48cc"; ctxSnake.beginPath(); ctxSnake.arc(bloco.x + 10, bloco.y + 10, 9, 0, 2 * Math.PI); ctxSnake.fill();
                 });
-
-                ctx.textAlign = "left"; ctx.font = "bold 22px Arial";
-                ctx.fillStyle = "#000000"; ctx.fillText(`PONTOS: ${pontuacao}`, 16, 31);
-                ctx.fillStyle = "#ffffff"; ctx.fillText(`PONTOS: ${pontuacao}`, 15, 30);
-
-            } else if (estadoJogo === 'GAMEOVER') {
-                ctx.fillStyle = "#1e1e1e"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#ed1c24"; ctx.font = "bold 40px Arial"; ctx.textAlign = "center";
-                ctx.fillText("GAME OVER", canvas.width / 2, 130);
-                ctx.fillStyle = "#ffffff"; ctx.font = "bold 22px Arial";
-                ctx.fillText(`PONTUAÇÃO FINAL: ${pontuacao}`, canvas.width / 2, 190);
-                ctx.fillStyle = "#3498db"; ctx.fillRect(canvas.width / 2 - 90, 240, 180, 50);
-                ctx.fillStyle = "#ffffff"; ctx.font = "bold 20px Arial";
-                ctx.fillText("MENU INICIAL", canvas.width / 2, 272);
+                ctxSnake.textAlign = "left"; ctxSnake.font = "bold 22px Arial"; ctxSnake.fillStyle = "#ffffff"; ctxSnake.fillText(`PONTOS: ${pontuacaoSnake}`, 15, 30);
+            } else if (estadoJogoSnake === 'GAMEOVER') {
+                ctxSnake.fillStyle = "#1e1e1e"; ctxSnake.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+                ctxSnake.fillStyle = "#ed1c24"; ctxSnake.font = "bold 40px Arial"; ctxSnake.textAlign = "center"; ctxSnake.fillText("GAME OVER", snakeCanvas.width / 2, 130);
+                ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 22px Arial"; ctxSnake.fillText(`PONTOS: ${pontuacaoSnake}`, snakeCanvas.width / 2, 190);
+                ctxSnake.fillStyle = "#3498db"; ctxSnake.fillRect(snakeCanvas.width / 2 - 90, 240, 180, 50);
+                ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 20px Arial"; ctxSnake.fillText("REINICIAR", snakeCanvas.width / 2, 272);
             }
-
-            setTimeout(loopJogo, VELOCIDADE);
+            setTimeout(loopSnake, VELOCIDADE_SNAKE);
         }
 
         window.addEventListener("keydown", function(e) {
-            if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.key) > -1) { 
-                // Previne scroll apenas se estiver jogando Snake
-                if (estadoJogo === 'JOGANDO') e.preventDefault(); 
-            }
-            if (estadoJogo !== 'JOGANDO' || mudouDirecaoNesteFrame) return;
+            if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.key) > -1 && estadoJogoSnake === 'JOGANDO') e.preventDefault();
+            if (estadoJogoSnake !== 'JOGANDO' || mudouDirecaoNesteFrame) return;
             if (e.key === "ArrowUp" && direcaoY === 0) { direcaoX = 0; direcaoY = -TAMANHO_BLOCO; mudouDirecaoNesteFrame = true; } 
             else if (e.key === "ArrowDown" && direcaoY === 0) { direcaoX = 0; direcaoY = TAMANHO_BLOCO; mudouDirecaoNesteFrame = true; } 
             else if (e.key === "ArrowLeft" && direcaoX === 0) { direcaoX = -TAMANHO_BLOCO; direcaoY = 0; mudouDirecaoNesteFrame = true; } 
             else if (e.key === "ArrowRight" && direcaoX === 0) { direcaoX = TAMANHO_BLOCO; direcaoY = 0; mudouDirecaoNesteFrame = true; }
         });
-
-        canvas.addEventListener("click", function(e) {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-
-            if (estadoJogo === 'MENU') {
-                if (mouseX >= canvas.width/2 - 90 && mouseX <= canvas.width/2 + 90 && mouseY >= 250 && mouseY <= 300) { iniciarJogo(); }
-            } else if (estadoJogo === 'GAMEOVER') {
-                if (mouseX >= canvas.width/2 - 90 && mouseX <= canvas.width/2 + 90 && mouseY >= 240 && mouseY <= 290) { estadoJogo = 'MENU'; }
-            }
+        snakeCanvas.addEventListener("click", function(e) {
+            const rect = snakeCanvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left; const mouseY = e.clientY - rect.top;
+            if ((estadoJogoSnake === 'MENU' || estadoJogoSnake === 'GAMEOVER') && mouseX >= snakeCanvas.width/2 - 90 && mouseX <= snakeCanvas.width/2 + 90 && mouseY >= 240 && mouseY <= 300) { iniciarJogoSnake(); }
         });
 
-        function iniciarLoopSnakeSeNecessario() {
-            if (!loopRodando) {
-                loopRodando = true;
-                loopJogo();
+        function iniciarLoopSnakeSeNecessario() { if (!loopSnakeRodando) { loopSnakeRodando = true; loopSnake(); } }
+    </script>
+
+    <script>
+        const flappyCanvas = document.getElementById("flappyCanvas");
+        const ctxFlappy = flappyCanvas.getContext("2d");
+
+        const startMenuFlappy = document.getElementById("start-menu-flappy");
+        const gameOverMenuFlappy = document.getElementById("game-over-menu-flappy");
+        const finalScoreTextFlappy = document.getElementById("final-score-flappy");
+
+        let framesFlappy = 0;
+        let scoreFlappy = 0;
+        let gameStateFlappy = 'START'; 
+        let loopFlappyRodando = false;
+
+        const bird = {
+            x: 60, y: 250, radius: 12, gravity: 0.6, velocity: 0, jump: -8, rotation: 0,
+            draw() {
+                ctxFlappy.save(); ctxFlappy.translate(this.x, this.y);
+                this.rotation = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, (this.velocity * 0.1)));
+                ctxFlappy.rotate(this.rotation);
+                ctxFlappy.fillStyle = "#f1c40f"; ctxFlappy.beginPath(); ctxFlappy.arc(0, 0, this.radius, 0, Math.PI * 2); ctxFlappy.fill(); ctxFlappy.stroke();
+                ctxFlappy.fillStyle = "#f39c12"; ctxFlappy.beginPath(); ctxFlappy.ellipse(-4, 2, 6, 4, 0, 0, Math.PI * 2); ctxFlappy.fill();
+                ctxFlappy.fillStyle = "white"; ctxFlappy.beginPath(); ctxFlappy.arc(4, -4, 4, 0, Math.PI * 2); ctxFlappy.fill();
+                ctxFlappy.fillStyle = "black"; ctxFlappy.beginPath(); ctxFlappy.arc(5, -4, 2, 0, Math.PI * 2); ctxFlappy.fill();
+                ctxFlappy.fillStyle = "#e67e22"; ctxFlappy.beginPath(); ctxFlappy.moveTo(8, 0); ctxFlappy.lineTo(18, 2); ctxFlappy.lineTo(8, 6); ctxFlappy.fill();
+                ctxFlappy.restore(); 
+            },
+            update() {
+                this.velocity += this.gravity; this.y += this.velocity;
+                if (this.y + this.radius >= flappyCanvas.height) { this.y = flappyCanvas.height - this.radius; triggerGameOverFlappy(); }
+                if (this.y - this.radius <= 0) { this.y = this.radius; this.velocity = 0; }
+            },
+            flap() { this.velocity = this.jump; }
+        };
+
+        const pipes = {
+            position: [], width: 50, gap: 140, dx: 3,
+            draw() {
+                for (let i = 0; i < this.position.length; i++) {
+                    let p = this.position[i]; let topY = p.y; let bottomY = p.y + this.gap;
+                    let gradient = ctxFlappy.createLinearGradient(p.x, 0, p.x + this.width, 0);
+                    gradient.addColorStop(0, "#27ae60"); gradient.addColorStop(0.5, "#2ecc71"); gradient.addColorStop(1, "#229954");
+                    ctxFlappy.fillStyle = gradient; ctxFlappy.lineWidth = 2; ctxFlappy.strokeStyle = "#145a32";
+                    ctxFlappy.fillRect(p.x, 0, this.width, topY); ctxFlappy.strokeRect(p.x, 0, this.width, topY);
+                    ctxFlappy.fillRect(p.x - 2, topY - 20, this.width + 4, 20); ctxFlappy.strokeRect(p.x - 2, topY - 20, this.width + 4, 20);
+                    ctxFlappy.fillRect(p.x, bottomY, this.width, flappyCanvas.height - bottomY); ctxFlappy.strokeRect(p.x, bottomY, this.width, flappyCanvas.height - bottomY);
+                    ctxFlappy.fillRect(p.x - 2, bottomY, this.width + 4, 20); ctxFlappy.strokeRect(p.x - 2, bottomY, this.width + 4, 20);
+                }
+            },
+            update() {
+                if (framesFlappy % 90 === 0) { this.position.push({ x: flappyCanvas.width, y: Math.max(50, Math.random() * (flappyCanvas.height - this.gap - 100)), passed: false }); }
+                for (let i = 0; i < this.position.length; i++) {
+                    let p = this.position[i]; p.x -= this.dx;
+                    let pDireita = bird.x + bird.radius; let pEsquerda = bird.x - bird.radius;
+                    let pCima = bird.y - bird.radius; let pBaixo = bird.y + bird.radius;
+                    if (pDireita > p.x && pEsquerda < p.x + this.width && (pCima < p.y || pBaixo > p.y + this.gap)) { triggerGameOverFlappy(); }
+                    if (!p.passed && p.x + this.width < bird.x - bird.radius) { scoreFlappy++; p.passed = true; }
+                    if (p.x + this.width <= 0) { this.position.shift(); i--; }
+                }
             }
+        };
+
+        function triggerGameOverFlappy() {
+            gameStateFlappy = 'GAMEOVER';
+            finalScoreTextFlappy.innerText = `Placar Final: ${scoreFlappy}`;
+            gameOverMenuFlappy.classList.remove("hidden");
         }
+
+        function resetFlappy() {
+            bird.y = 250; bird.velocity = 0; bird.rotation = 0;
+            pipes.position = []; scoreFlappy = 0; framesFlappy = 0;
+            gameStateFlappy = 'PLAYING';
+            gameOverMenuFlappy.classList.add("hidden"); startMenuFlappy.classList.add("hidden");
+        }
+
+        function handleInputFlappy() {
+            if (document.getElementById('tela-flappy').style.display !== 'flex') return;
+            if (gameStateFlappy === 'START') { resetFlappy(); bird.flap(); } 
+            else if (gameStateFlappy === 'PLAYING') { bird.flap(); }
+        }
+
+        function loopFlappy() {
+            if (document.getElementById('tela-flappy').style.display !== 'flex') {
+                requestAnimationFrame(loopFlappy); return;
+            }
+            if (gameStateFlappy === 'PLAYING') { bird.update(); pipes.update(); }
+            
+            ctxFlappy.clearRect(0, 0, flappyCanvas.width, flappyCanvas.height);
+            pipes.draw(); bird.draw();
+            
+            if (gameStateFlappy === 'PLAYING') {
+                ctxFlappy.fillStyle = "white"; ctxFlappy.strokeStyle = "black"; ctxFlappy.lineWidth = 4; ctxFlappy.font = "bold 40px 'Segoe UI'";
+                ctxFlappy.strokeText(scoreFlappy, flappyCanvas.width / 2 - 10, 50); ctxFlappy.fillText(scoreFlappy, flappyCanvas.width / 2 - 10, 50);
+            }
+            framesFlappy++; requestAnimationFrame(loopFlappy);
+        }
+
+        window.addEventListener("keydown", (e) => { if (e.code === "Space" && document.getElementById('tela-flappy').style.display === 'flex') { e.preventDefault(); handleInputFlappy(); } });
+        document.getElementById("game-container-flappy").addEventListener("mousedown", (e) => { if (e.target.id !== "restart-btn") handleInputFlappy(); });
+        document.getElementById("restart-btn").addEventListener("click", resetFlappy);
+
+        function iniciarLoopFlappySeNecessario() { if (!loopFlappyRodando) { loopFlappyRodando = true; loopFlappy(); } }
     </script>
 </body>
 </html>
