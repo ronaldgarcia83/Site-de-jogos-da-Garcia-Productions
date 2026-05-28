@@ -83,7 +83,7 @@
             border: 2px solid #333;
             border-radius: 10px;
             padding: 20px;
-            width: 280px;
+            width: 200px;
             text-align: center;
             cursor: pointer;
             transition: 0.3s;
@@ -94,23 +94,28 @@
         .game-card.snake-card:hover { border-color: #3f48cc; }
         .game-card.mc-card:hover { border-color: #27ae60; }
         .game-card.flappy-card:hover { border-color: #f1c40f; }
+        .game-card.cube-card:hover { border-color: #edc22e; }
 
-        .game-card h2 { margin: 0 0 10px 0; }
+        .game-card h2 { margin: 0 0 10px 0; font-size: 1.2rem; }
         .game-card.snake-card h2 { color: #3f48cc; }
         .game-card.mc-card h2 { color: #27ae60; }
         .game-card.flappy-card h2 { color: #f1c40f; }
+        .game-card.cube-card h2 { color: #edc22e; }
 
-        .game-card p { font-size: 0.9rem; color: #bbb; }
+        .game-card p { font-size: 0.8rem; color: #bbb; }
 
         .card-banner {
-            height: 150px;
+            height: 120px;
             width: 100%;
             border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 15px;
-            font-size: 50px;
+            font-size: 40px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
 
         /* --- CONTAINERS DOS JOGOS --- */
@@ -123,6 +128,7 @@
             max-width: 800px;
         }
 
+        /* Container Snake */
         #game-container-snake {
             position: relative;
             background-color: #1e1e1e;
@@ -138,7 +144,8 @@
             cursor: pointer;
         }
 
-        #game-container-pythoncraft {
+        /* Container HTMLcraft (A-Frame) */
+        #game-container-htmlcraft {
             width: 100%;
             height: 500px;
             background-color: #000;
@@ -148,6 +155,7 @@
             position: relative;
         }
 
+        /* Container Flappy Bird */
         #game-container-flappy {
             position: relative;
             width: 400px;
@@ -164,6 +172,91 @@
             border-radius: 4px;
         }
 
+        /* CSS CUBE 2048 (Integrado) */
+        :root {
+            --bg-cube: #faf8ef;
+            --board-bg: #bbada0;
+            --cell-bg: rgba(238, 228, 218, 0.35);
+            --text-dark: #776e65;
+            --text-light: #f9f6f2;
+        }
+
+        #game-container-cube {
+            background-color: var(--bg-cube);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 400px;
+            box-sizing: border-box;
+        }
+
+        .header-cube {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-cube h1 { font-size: 32px; margin: 0; color: var(--text-dark); line-height: 1.1; }
+        .header-cube h1 span { font-size: 14px; display: block; color: #a39587; }
+
+        .score-box-cube {
+            background: var(--board-bg); padding: 10px 20px; border-radius: 6px;
+            color: white; font-weight: bold; font-size: 22px; text-align: center;
+            box-shadow: 0 4px 0 #a39587; 
+        }
+
+        .score-title-cube { font-size: 12px; text-transform: uppercase; margin-bottom: 2px; }
+
+        #board-cube {
+            background: var(--board-bg); width: 360px; height: 360px;
+            padding: 10px; border-radius: 10px; display: grid;
+            grid-template-columns: repeat(4, 1fr); gap: 10px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.2), 0 8px 0 #9e9185; 
+            position: relative; box-sizing: border-box;
+        }
+
+        .grid-cell-cube { background: var(--cell-bg); border-radius: 6px; }
+
+        .tile-cube {
+            position: absolute; width: 77.5px; height: 77.5px; /* Ajuste fino de tamanho */
+            background: #eee4da; border-radius: 6px; display: flex;
+            justify-content: center; align-items: center; font-size: 34px;
+            font-weight: bold; color: var(--text-dark);
+            transition: transform 0.15s ease-in-out;
+            box-shadow: 0 6px 0 #cdc1b4, 0 10px 10px rgba(0,0,0,0.15);
+            margin-top: -6px; z-index: 10;
+        }
+
+        .tc-2 { background: #eee4da; box-shadow: 0 6px 0 #cdc1b4; }
+        .tc-4 { background: #ede0c8; box-shadow: 0 6px 0 #d9cbaf; }
+        .tc-8 { background: #f2b179; color: var(--text-light); box-shadow: 0 6px 0 #e0995c; }
+        .tc-16 { background: #f59563; color: var(--text-light); box-shadow: 0 6px 0 #e27d4c; }
+        .tc-32 { background: #f67c5f; color: var(--text-light); box-shadow: 0 6px 0 #e36144; }
+        .tc-64 { background: #f65e3b; color: var(--text-light); box-shadow: 0 6px 0 #e24522; }
+        .tc-128 { background: #edcf72; color: var(--text-light); box-shadow: 0 6px 0 #d7b95a; font-size: 28px; }
+        .tc-256 { background: #edcc61; color: var(--text-light); box-shadow: 0 6px 0 #d6b74e; font-size: 28px; }
+        .tc-512 { background: #edc850; color: var(--text-light); box-shadow: 0 6px 0 #d5b241; font-size: 28px; }
+        .tc-1024, .tc-2048 { background: #edc53f; color: var(--text-light); box-shadow: 0 6px 0 #d4af36; font-size: 22px; }
+
+        #game-over-cube {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(238, 228, 218, 0.73); display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            border-radius: 10px; z-index: 100;
+        }
+        #game-over-cube h2 { color: var(--text-dark); font-size: 40px; margin-bottom: 10px; }
+        .btn-cube { 
+            background: #8f7a66; color: white; border: none; padding: 10px 20px; 
+            font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold; 
+            box-shadow: 0 4px 0 #6e5e4e; 
+        }
+        .btn-cube:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+
+        /* Estilos Menus Overlay Flappy */
         .menu-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -306,19 +399,25 @@
         <div class="game-card snake-card" onclick="abrirJogo('snake')">
             <div class="card-banner" style="background-color:#a2d149;">🍎🐍</div>
             <h2>SNAKE GAME</h2>
-            <p>A clássica cobrinha redonda. Jogue no navegador.</p>
+            <p>A clássica cobrinha redonda.</p>
         </div>
 
-        <div class="game-card mc-card" onclick="abrirJogo('pythoncraft')">
+        <div class="game-card mc-card" onclick="abrirJogo('htmlcraft')">
             <div class="card-banner" style="background-color:#27ae60;">⛏️🌲</div>
-            <h2>PYTHONCRAFT</h2>
-            <p>Construa seu mundo em 3D. Realidade Virtual Web.</p>
+            <h2>HTMLCRAFT</h2>
+            <p>Construa seu mundo em 3D.</p>
         </div>
 
         <div class="game-card flappy-card" onclick="abrirJogo('flappy')">
             <div class="card-banner" style="background-color:#87CEEB;">🐦💨</div>
             <h2>FLAPPY BIRD</h2>
-            <p>Passe pelos canos sem bater. Teste sua paciência!</p>
+            <p>Passe pelos canos sem bater.</p>
+        </div>
+
+        <div class="game-card cube-card" onclick="abrirJogo('cube')">
+            <div class="card-banner" style="background-color:#edc22e; color:#776e65; text-shadow:none;">2048</div>
+            <h2>CUBE 2048</h2>
+            <p>Junte os números iguais.</p>
         </div>
     </div>
 
@@ -330,9 +429,9 @@
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
-    <div class="container" id="tela-pythoncraft">
+    <div class="container" id="tela-htmlcraft">
         <p style="color:#27ae60; font-weight:bold; margin-top:0;">Use W, A, S, D para andar e Clique para colocar blocos. Clique e arraste para olhar.</p>
-        <div id="game-container-pythoncraft">
+        <div id="game-container-htmlcraft">
             <a-scene embedded>
                 <a-sky color="#87CEEB"></a-sky>
                 <a-plane position="0 0 0" rotation="-90 0 0" width="100" height="100" color="#3CB371" construtor-de-blocos></a-plane>
@@ -361,7 +460,32 @@
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
-    <!-- MURAL DE COMENTÁRIOS -->
+    <div class="container" id="tela-cube">
+        <div id="game-container-cube">
+            <div class="header-cube">
+                <h1>Cube 2048<span>Garcia Productions</span></h1>
+                <div class="score-box-cube">
+                    <div class="score-title-cube">Pontos</div>
+                    <span id="score-cube">0</span>
+                </div>
+            </div>
+        
+            <div id="board-cube">
+                <div class="grid-cell-cube"></div><div class="grid-cell-cube"></div><div class="grid-cell-cube"></div><div class="grid-cell-cube"></div>
+                <div class="grid-cell-cube"></div><div class="grid-cell-cube"></div><div class="grid-cell-cube"></div><div class="grid-cell-cube"></div>
+                <div class="grid-cell-cube"></div><div class="grid-cell-cube"></div><div class="grid-cell-cube"></div><div class="grid-cell-cube"></div>
+                <div class="grid-cell-cube"></div><div class="grid-cell-cube"></div><div class="grid-cell-cube"></div><div class="grid-cell-cube"></div>
+                
+                <div id="game-over-cube">
+                    <h2>Fim de Jogo!</h2>
+                    <button class="btn-cube" onclick="resetCube()">Tentar Novamente</button>
+                </div>
+            </div>
+        </div>
+        <p style="color:#bbb; font-size:0.9rem; margin-top:10px;">Use as <strong>Setas do Teclado</strong> para mover os blocos.</p>
+        <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
+    </div>
+
     <div class="comments-section" id="comentarios">
         <h3>💬 Mural da Garcia Productions</h3>
         
@@ -372,67 +496,68 @@
         </div>
 
         <div class="comment-list" id="lista-comentarios">
-            <!-- Os comentários injetados pelo JavaScript vão aparecer aqui -->
-        </div>
+            </div>
     </div>
 
     <div class="footer">
         &copy; 2026 Garcia Productions. Todos os direitos reservados.
     </div>
 
-    <!-- SCRIPT DE NAVEGAÇÃO -->
     <script>
+        let jogoAtual = 'nenhum';
+
         function abrirJogo(jogo) {
+            jogoAtual = jogo;
             document.getElementById('game-selector').style.display = 'none';
-            document.getElementById('comentarios').style.display = 'none'; // Esconde os comentários na tela do jogo
+            document.getElementById('comentarios').style.display = 'none'; 
             
             if (jogo === 'snake') {
                 document.getElementById('tela-snake').style.display = 'flex';
                 document.getElementById('header-subtitle').innerText = "THE SNAKE GAME";
                 iniciarLoopSnakeSeNecessario();
-            } else if (jogo === 'pythoncraft') {
-                document.getElementById('tela-pythoncraft').style.display = 'flex';
-                document.getElementById('header-subtitle').innerText = "PYTHONCRAFT 3D";
+            } else if (jogo === 'htmlcraft') {
+                document.getElementById('tela-htmlcraft').style.display = 'flex';
+                document.getElementById('header-subtitle').innerText = "HTMLCRAFT 3D";
                 setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
             } else if (jogo === 'flappy') {
                 document.getElementById('tela-flappy').style.display = 'flex';
                 document.getElementById('header-subtitle').innerText = "FLAPPY BIRD";
                 iniciarLoopFlappySeNecessario();
+            } else if (jogo === 'cube') {
+                document.getElementById('tela-cube').style.display = 'flex';
+                document.getElementById('header-subtitle').innerText = "CUBE 2048";
+                initCubeGame();
             }
         }
 
         function voltarAoMenu() {
+            jogoAtual = 'nenhum';
             document.getElementById('tela-snake').style.display = 'none';
-            document.getElementById('tela-pythoncraft').style.display = 'none';
+            document.getElementById('tela-htmlcraft').style.display = 'none';
             document.getElementById('tela-flappy').style.display = 'none';
+            document.getElementById('tela-cube').style.display = 'none';
             
             document.getElementById('game-selector').style.display = 'flex';
-            document.getElementById('comentarios').style.display = 'block'; // Mostra os comentários de novo
+            document.getElementById('comentarios').style.display = 'block'; 
             document.getElementById('header-subtitle').innerText = "ESCOLHA O SEU JOGO";
             
-            // Pausa a cobrinha
             if (estadoJogoSnake === 'JOGANDO') estadoJogoSnake = 'MENU';
-            
-            // Pausa o Flappy Bird
             if (gameStateFlappy === 'PLAYING') triggerGameOverFlappy();
         }
     </script>
 
-    <!-- SCRIPT DO SISTEMA DE COMENTÁRIOS -->
     <script>
         function carregarComentarios() {
             const lista = document.getElementById('lista-comentarios');
-            // Busca os comentários salvos no navegador (se não tiver, cria uma lista vazia)
             const comentarios = JSON.parse(localStorage.getItem('garcia_comentarios')) || [];
             
-            lista.innerHTML = ''; // Limpa a lista antes de desenhar
+            lista.innerHTML = ''; 
             
             if (comentarios.length === 0) {
                 lista.innerHTML = '<p style="color:#777; text-align:center; font-style:italic;">Nenhum comentário ainda. Seja o primeiro a comentar!</p>';
                 return;
             }
 
-            // Desenha cada comentário na tela (do mais recente para o mais antigo)
             comentarios.slice().reverse().forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'comment-item';
@@ -456,32 +581,163 @@
 
             const comentarios = JSON.parse(localStorage.getItem('garcia_comentarios')) || [];
             
-            // Pega a data e hora atual
             const agora = new Date();
             const dataFormatada = `${agora.toLocaleDateString('pt-BR')} às ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
 
-            // Salva o novo comentário
             comentarios.push({ 
-                nome: nomeInput.value.replace(/</g, "&lt;").replace(/>/g, "&gt;"), // Proteção básica
+                nome: nomeInput.value.replace(/</g, "&lt;").replace(/>/g, "&gt;"),
                 texto: textoInput.value.replace(/</g, "&lt;").replace(/>/g, "&gt;"),
                 data: dataFormatada 
             });
 
             localStorage.setItem('garcia_comentarios', JSON.stringify(comentarios));
             
-            // Limpa os campos
             nomeInput.value = '';
             textoInput.value = '';
             
-            // Recarrega a lista para mostrar o comentário novo
             carregarComentarios();
         }
 
-        // Carrega os comentários automaticamente quando o site abre
         window.addEventListener('DOMContentLoaded', carregarComentarios);
     </script>
 
-    <!-- SCRIPT DO SNAKE GAME -->
+    <script>
+        const boardSizeCube = 4;
+        let gridCube = [];
+        let scoreCube = 0;
+        const boardElementCube = document.getElementById('board-cube');
+        const scoreElementCube = document.getElementById('score-cube');
+        const gameOverElementCube = document.getElementById('game-over-cube');
+
+        function initCubeGame() {
+            gridCube = Array(boardSizeCube).fill().map(() => Array(boardSizeCube).fill(0));
+            scoreCube = 0;
+            updateScoreCube(0);
+            gameOverElementCube.style.display = 'none';
+            document.querySelectorAll('.tile-cube').forEach(t => t.remove());
+            addRandomTileCube();
+            addRandomTileCube();
+            drawTilesCube();
+        }
+
+        function addRandomTileCube() {
+            let emptyCells = [];
+            for (let r = 0; r < boardSizeCube; r++) {
+                for (let c = 0; c < boardSizeCube; c++) {
+                    if (gridCube[r][c] === 0) emptyCells.push({r, c});
+                }
+            }
+            if (emptyCells.length > 0) {
+                let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                gridCube[randomCell.r][randomCell.c] = Math.random() < 0.9 ? 2 : 4;
+            }
+        }
+
+        function drawTilesCube() {
+            document.querySelectorAll('.tile-cube').forEach(t => t.remove());
+            for (let r = 0; r < boardSizeCube; r++) {
+                for (let c = 0; c < boardSizeCube; c++) {
+                    if (gridCube[r][c] !== 0) {
+                        let tile = document.createElement('div');
+                        tile.classList.add('tile-cube', `tc-${gridCube[r][c]}`);
+                        tile.innerText = gridCube[r][c];
+                        // 10 padding + gap + tamanho da célula base
+                        let x = 10 + c * (77.5 + 10);
+                        let y = 10 + r * (77.5 + 10);
+                        tile.style.transform = `translate(${x}px, ${y}px)`;
+                        boardElementCube.appendChild(tile);
+                    }
+                }
+            }
+        }
+
+        function updateScoreCube(points) {
+            scoreCube += points;
+            scoreElementCube.innerText = scoreCube;
+        }
+
+        function slideCube(row) {
+            let filteredRow = row.filter(val => val !== 0);
+            for (let i = 0; i < filteredRow.length - 1; i++) {
+                if (filteredRow[i] === filteredRow[i+1]) {
+                    filteredRow[i] *= 2;
+                    updateScoreCube(filteredRow[i]);
+                    filteredRow.splice(i + 1, 1);
+                }
+            }
+            while (filteredRow.length < boardSizeCube) {
+                filteredRow.push(0);
+            }
+            return filteredRow;
+        }
+
+        function moveCubeLeft() {
+            let moved = false;
+            for (let r = 0; r < boardSizeCube; r++) {
+                let oldRow = gridCube[r];
+                let newRow = slideCube(gridCube[r]);
+                gridCube[r] = newRow;
+                if (oldRow.join(',') !== newRow.join(',')) moved = true;
+            }
+            return moved;
+        }
+
+        function moveCubeRight() {
+            let moved = false;
+            for (let r = 0; r < boardSizeCube; r++) {
+                let oldRow = gridCube[r];
+                let reversedRow = oldRow.slice().reverse();
+                let newRow = slideCube(reversedRow).reverse();
+                gridCube[r] = newRow;
+                if (oldRow.join(',') !== newRow.join(',')) moved = true;
+            }
+            return moved;
+        }
+
+        function moveCubeUp() {
+            let moved = false;
+            for (let c = 0; c < boardSizeCube; c++) {
+                let column = [gridCube[0][c], gridCube[1][c], gridCube[2][c], gridCube[3][c]];
+                let newColumn = slideCube(column);
+                for (let r = 0; r < boardSizeCube; r++) {
+                    if (gridCube[r][c] !== newColumn[r]) moved = true;
+                    gridCube[r][c] = newColumn[r];
+                }
+            }
+            return moved;
+        }
+
+        function moveCubeDown() {
+            let moved = false;
+            for (let c = 0; c < boardSizeCube; c++) {
+                let column = [gridCube[3][c], gridCube[2][c], gridCube[1][c], gridCube[0][c]];
+                let newColumn = slideCube(column);
+                newColumn.reverse();
+                for (let r = 0; r < boardSizeCube; r++) {
+                    if (gridCube[r][c] !== newColumn[r]) moved = true;
+                    gridCube[r][c] = newColumn[r];
+                }
+            }
+            return moved;
+        }
+
+        function checkGameOverCube() {
+            for (let r = 0; r < boardSizeCube; r++) {
+                for (let c = 0; c < boardSizeCube; c++) {
+                    if (gridCube[r][c] === 0) return false;
+                    if (c < boardSizeCube - 1 && gridCube[r][c] === gridCube[r][c+1]) return false;
+                    if (r < boardSizeCube - 1 && gridCube[r][c] === gridCube[r+1][c]) return false;
+                }
+            }
+            gameOverElementCube.style.display = 'flex';
+            return true;
+        }
+
+        function resetCube() {
+            initCubeGame();
+        }
+    </script>
+
     <script>
         const snakeCanvas = document.getElementById("snakeCanvas");
         const ctxSnake = snakeCanvas.getContext("2d");
@@ -549,14 +805,36 @@
             setTimeout(loopSnake, VELOCIDADE_SNAKE);
         }
 
+        // EVENTOS DE TECLADO CENTRALIZADOS (SNAKE E CUBE)
         window.addEventListener("keydown", function(e) {
-            if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.key) > -1 && estadoJogoSnake === 'JOGANDO') e.preventDefault();
-            if (estadoJogoSnake !== 'JOGANDO' || mudouDirecaoNesteFrame) return;
-            if (e.key === "ArrowUp" && direcaoY === 0) { direcaoX = 0; direcaoY = -TAMANHO_BLOCO; mudouDirecaoNesteFrame = true; } 
-            else if (e.key === "ArrowDown" && direcaoY === 0) { direcaoX = 0; direcaoY = TAMANHO_BLOCO; mudouDirecaoNesteFrame = true; } 
-            else if (e.key === "ArrowLeft" && direcaoX === 0) { direcaoX = -TAMANHO_BLOCO; direcaoY = 0; mudouDirecaoNesteFrame = true; } 
-            else if (e.key === "ArrowRight" && direcaoX === 0) { direcaoX = TAMANHO_BLOCO; direcaoY = 0; mudouDirecaoNesteFrame = true; }
+            // Se estiver jogando Snake
+            if (jogoAtual === 'snake') {
+                if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.key) > -1 && estadoJogoSnake === 'JOGANDO') e.preventDefault();
+                if (estadoJogoSnake !== 'JOGANDO' || mudouDirecaoNesteFrame) return;
+                if (e.key === "ArrowUp" && direcaoY === 0) { direcaoX = 0; direcaoY = -TAMANHO_BLOCO; mudouDirecaoNesteFrame = true; } 
+                else if (e.key === "ArrowDown" && direcaoY === 0) { direcaoX = 0; direcaoY = TAMANHO_BLOCO; mudouDirecaoNesteFrame = true; } 
+                else if (e.key === "ArrowLeft" && direcaoX === 0) { direcaoX = -TAMANHO_BLOCO; direcaoY = 0; mudouDirecaoNesteFrame = true; } 
+                else if (e.key === "ArrowRight" && direcaoX === 0) { direcaoX = TAMANHO_BLOCO; direcaoY = 0; mudouDirecaoNesteFrame = true; }
+            }
+            
+            // Se estiver jogando Cube 2048
+            else if (jogoAtual === 'cube') {
+                if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.key) > -1) e.preventDefault();
+                if (gameOverElementCube.style.display === 'flex') return;
+                let moved = false;
+                if (e.key === 'ArrowLeft') moved = moveCubeLeft();
+                else if (e.key === 'ArrowRight') moved = moveCubeRight();
+                else if (e.key === 'ArrowUp') moved = moveCubeUp();
+                else if (e.key === 'ArrowDown') moved = moveCubeDown();
+
+                if (moved) {
+                    addRandomTileCube();
+                    drawTilesCube();
+                    checkGameOverCube();
+                }
+            }
         });
+
         snakeCanvas.addEventListener("click", function(e) {
             const rect = snakeCanvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left; const mouseY = e.clientY - rect.top;
             if ((estadoJogoSnake === 'MENU' || estadoJogoSnake === 'GAMEOVER') && mouseX >= snakeCanvas.width/2 - 90 && mouseX <= snakeCanvas.width/2 + 90 && mouseY >= 240 && mouseY <= 300) { iniciarJogoSnake(); }
@@ -565,7 +843,6 @@
         function iniciarLoopSnakeSeNecessario() { if (!loopSnakeRodando) { loopSnakeRodando = true; loopSnake(); } }
     </script>
 
-    <!-- SCRIPT DO FLAPPY BIRD -->
     <script>
         const flappyCanvas = document.getElementById("flappyCanvas");
         const ctxFlappy = flappyCanvas.getContext("2d");
