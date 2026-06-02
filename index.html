@@ -237,7 +237,6 @@
             <p>Junte os números iguais.</p>
         </div>
 
-        <!-- CARD DO PONG -->
         <div class="game-card pong-card" onclick="abrirJogo('pong')">
             <div class="card-banner" style="background-color:#e74c3c;">🏓⚽</div>
             <h2>PONG MULTI</h2>
@@ -245,7 +244,6 @@
         </div>
     </div>
 
-    <!-- TELA SNAKE -->
     <div class="container" id="tela-snake">
         <div id="game-container-snake">
             <canvas id="snakeCanvas" width="600" height="400"></canvas>
@@ -253,7 +251,6 @@
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
-    <!-- TELA HTMLCRAFT -->
     <div class="container" id="tela-htmlcraft">
         <p style="color:#27ae60; font-weight:bold; margin-top:0;">Use W, A, S, D para andar e Clique para colocar blocos. Clique e arraste para olhar.</p>
         <div id="game-container-htmlcraft">
@@ -268,7 +265,6 @@
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
-    <!-- TELA FLAPPY BIRD -->
     <div class="container" id="tela-flappy">
         <div id="game-container-flappy">
             <canvas id="flappyCanvas" width="400" height="500"></canvas>
@@ -285,7 +281,6 @@
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
-    <!-- TELA CUBE 2048 -->
     <div class="container" id="tela-cube">
         <div id="game-container-cube">
             <div class="header-cube">
@@ -306,12 +301,10 @@
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
-    <!-- TELA PONG -->
     <div class="container" id="tela-pong">
         <div id="game-container-pong">
             <canvas id="pongCanvas" width="600" height="400"></canvas>
             
-            <!-- Menu Inicial do Pong -->
             <div id="menu-pong" class="menu-overlay">
                 <h1>PONG MULTI</h1>
                 <p>Escolha o seu modo de jogo:</p>
@@ -319,7 +312,6 @@
                 <button class="pong-menu-btn" onclick="startPong('local')">X1 Local (Teclado)</button>
             </div>
 
-            <!-- Tela de Game Over do Pong -->
             <div id="gameover-pong" class="menu-overlay hidden">
                 <h2 id="winner-text-pong">Fim de Jogo</h2>
                 <p>Quer revanche?</p>
@@ -333,7 +325,6 @@
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
-    <!-- MURAL DE COMENTÁRIOS -->
     <div class="comments-section" id="comentarios">
         <h3>💬 Mural da Garcia Productions</h3>
         <div class="comment-form">
@@ -348,7 +339,6 @@
         &copy; 2026 Garcia Productions. Todos os direitos reservados.
     </div>
 
-    <!-- CONTROLE DE NAVEGAÇÃO -->
     <script>
         let jogoAtual = 'nenhum';
 
@@ -398,7 +388,6 @@
         }
     </script>
 
-    <!-- COMENTÁRIOS -->
     <script>
         function carregarComentarios() {
             const lista = document.getElementById('lista-comentarios');
@@ -430,12 +419,11 @@
         window.addEventListener('DOMContentLoaded', carregarComentarios);
     </script>
 
-    <!-- JOGO: PONG MULTI -->
     <script>
         const pongCanvas = document.getElementById("pongCanvas");
         const ctxPong = pongCanvas.getContext("2d");
         
-        let pongMode = 'pc'; // 'pc' ou 'local'
+        let pongMode = 'pc'; 
         let pongRunning = false;
         let pongAnimationId;
 
@@ -448,7 +436,6 @@
         let ballRadius = 7;
         let ballSpeedX = 4, ballSpeedY = 4;
 
-        // Captura de Teclas precionadas
         const keysPressed = {};
 
         function showPongMenu() {
@@ -488,42 +475,38 @@
         }
 
         function updatePong() {
-            // Movimentação Player 1 (W e S)
             if (keysPressed['KeyW'] && p1Y > 0) p1Y -= paddleSpeed;
             if (keysPressed['KeyS'] && p1Y < pongCanvas.height - paddleHeight) p1Y += paddleSpeed;
 
-            // Movimentação Player 2 (Local vs PC)
             if (pongMode === 'local') {
                 if (keysPressed['ArrowUp'] && p2Y > 0) p2Y -= paddleSpeed;
                 if (keysPressed['ArrowDown'] && p2Y < pongCanvas.height - paddleHeight) p2Y += paddleSpeed;
             } else {
-                // Inteligência Artificial do PC (Seguindo a bola com delay natural)
+                // AQUI ESTÁ O NERF DO PC ("CACHORRINHO DO POU" DESTRUIDO!)
                 let p2Center = p2Y + paddleHeight / 2;
-                if (p2Center < ballY - 30 && p2Y < pongCanvas.height - paddleHeight) p2Y += paddleSpeed - 2.5;
-                else if (p2Center > ballY + 30 && p2Y > 0) p2Y -= paddleSpeed - 2.5;
+                let velocidadeDoPC = 3.2; // Bem mais lento para dar chance humana
+                
+                if (p2Center < ballY - 25 && p2Y < pongCanvas.height - paddleHeight) p2Y += velocidadeDoPC;
+                else if (p2Center > ballY + 25 && p2Y > 0) p2Y -= velocidadeDoPC;
             }
 
-            // Movimento da bola
             ballX += ballSpeedX;
             ballY += ballSpeedY;
 
-            // Colisão com teto e chão
             if (ballY - ballRadius <= 0 || ballY + ballRadius >= pongCanvas.height) {
                 ballSpeedY = -ballSpeedY;
             }
 
-            // Rebate no Player 1 (Esquerda)
             if (ballX - ballRadius <= paddleWidth + 10) {
                 if (ballY >= p1Y && ballY <= p1Y + paddleHeight) {
                     ballSpeedX = -ballSpeedX;
-                    ballSpeedX *= 1.05; // Aumenta velocidade aos poucos
+                    ballSpeedX *= 1.05; 
                 } else if (ballX < 0) {
                     p2Score++;
                     checkPongWinner();
                 }
             }
 
-            // Rebate no Player 2 (Direita)
             if (ballX + ballRadius >= pongCanvas.width - paddleWidth - 10) {
                 if (ballY >= p2Y && ballY <= p2Y + paddleHeight) {
                     ballSpeedX = -ballSpeedX;
@@ -550,25 +533,21 @@
             ctxPong.fillStyle = "#000";
             ctxPong.fillRect(0, 0, pongCanvas.width, pongCanvas.height);
 
-            // Rede central
             ctxPong.strokeStyle = "rgba(255,255,255,0.2)";
             ctxPong.lineWidth = 2;
             ctxPong.setLineDash([10, 10]);
             ctxPong.beginPath(); ctxPong.moveTo(300, 0); ctxPong.lineTo(300, 400); ctxPong.stroke();
             ctxPong.setLineDash([]);
 
-            // Barras (Paddles)
             ctxPong.fillStyle = "#fff";
             ctxPong.fillRect(10, p1Y, paddleWidth, paddleHeight);
             ctxPong.fillRect(pongCanvas.width - paddleWidth - 10, p2Y, paddleWidth, paddleHeight);
 
-            // Bola Redonda
             ctxPong.fillStyle = "#e74c3c";
             ctxPong.beginPath();
             ctxPong.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
             ctxPong.fill();
 
-            // Placar
             ctxPong.fillStyle = "#fff";
             ctxPong.font = "bold 30px Arial";
             ctxPong.fillText(p1Score, 250, 50);
@@ -579,7 +558,6 @@
             startPong(pongMode);
         }
 
-        // Eventos Globais de teclado escutando as teclas pressionadas
         window.addEventListener('keydown', (e) => {
             keysPressed[e.code] = true;
         });
@@ -588,7 +566,6 @@
         });
     </script>
 
-    <!-- SCRIPT CUBE 2048 -->
     <script>
         const boardSizeCube = 4; let gridCube = []; let scoreCube = 0;
         const boardElementCube = document.getElementById('board-cube');
@@ -607,7 +584,6 @@
         function resetCube() { initCubeGame(); }
     </script>
 
-    <!-- SCRIPT DO SNAKE GAME E BLOQUEIO DE SETAS -->
     <script>
         const snakeCanvas = document.getElementById("snakeCanvas"); const ctxSnake = snakeCanvas.getContext("2d");
         const TAMANHO_BLOCO = 20; const VELOCIDADE_SNAKE = 100; let estadoJogoSnake = 'MENU'; let cobra = []; let direcaoX = TAMANHO_BLOCO; let direcaoY = 0; let comida = {x: 0, y: 0}; let pontuacaoSnake = 0; let mudouDirecaoNesteFrame = false; let loopSnakeRodando = false;
@@ -644,7 +620,6 @@
         function iniciarLoopSnakeSeNecessario() { if (!loopSnakeRodando) { loopSnakeRodando = true; loopSnake(); } }
     </script>
 
-    <!-- SCRIPT DO FLAPPY BIRD -->
     <script>
         const flappyCanvas = document.getElementById("flappyCanvas"); const ctxFlappy = flappyCanvas.getContext("2d");
         const startMenuFlappy = document.getElementById("start-menu-flappy"); const gameOverMenuFlappy = document.getElementById("game-over-menu-flappy"); const finalScoreTextFlappy = document.getElementById("final-score-flappy");
