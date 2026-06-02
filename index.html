@@ -23,7 +23,6 @@
                     let bloco = document.createElement('a-box');
                     bloco.setAttribute('position', `${x} ${y} ${z}`);
                     
-                    // HTMLcraft com folhas verdes e troncos marrons
                     let cor = Math.random() > 0.5 ? '#228B22' : '#8B4513';
                     bloco.setAttribute('color', cor);
                     
@@ -48,12 +47,15 @@
             min-height: 100vh;
         }
 
+        /* --- HEADER & LOGIN --- */
         header {
             text-align: center;
-            padding: 30px;
+            padding: 30px 20px;
             background: linear-gradient(180deg, #1e1e1e, #141414);
             width: 100%;
             border-bottom: 2px solid #3f48cc;
+            position: relative;
+            box-sizing: border-box;
         }
 
         header h1 {
@@ -66,6 +68,88 @@
             margin: 5px 0 0 0;
             color: #aab751;
             font-weight: bold;
+        }
+
+        .user-panel {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .login-btn {
+            background-color: #3f48cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .login-btn:hover { background-color: #2c36a8; }
+
+        .user-info {
+            display: none;
+            font-weight: bold;
+            color: #aab751;
+        }
+
+        .logout-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        /* Modal de Login */
+        #login-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            border-top: 4px solid #3f48cc;
+            text-align: center;
+            width: 300px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+            background: #141414;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 10px;
+            background: #3f48cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         /* --- MENU DE SELEÇÃO --- */
@@ -175,7 +259,7 @@
         #pongCanvas { display: block; }
 
         /* Menus e Overlays Gerais */
-        .menu-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: rgba(0, 0, 0, 0.6); color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+        .menu-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: rgba(0, 0, 0, 0.6); color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); z-index: 10; }
         .hidden { display: none !important; }
         .menu-overlay h1, .menu-overlay h2 { margin: 0 0 10px 0; font-size: 36px; }
         .menu-overlay p { margin: 0 0 20px 0; font-size: 16px; text-align: center; line-height: 1.4; }
@@ -208,9 +292,25 @@
 <body>
 
     <header>
+        <div class="user-panel">
+            <button class="login-btn" id="btn-abrir-login" onclick="abrirModalLogin()">Entrar / Registrar</button>
+            <span class="user-info" id="user-display-name">Jogador</span>
+            <button class="logout-btn" id="btn-sair" onclick="fazerLogout()">Sair</button>
+        </div>
         <h1>GARCIA PRODUCTIONS</h1>
         <p id="header-subtitle">ESCOLHA O SEU JOGO</p>
     </header>
+
+    <!-- Modal de Login -->
+    <div id="login-modal">
+        <div class="modal-content">
+            <h2 style="margin-top:0; color:#3f48cc;">Entrar no Hub</h2>
+            <p style="color:#bbb; font-size:0.9rem;">Crie sua identidade local para salvar recordes e postar comentários.</p>
+            <input type="text" id="input-username" placeholder="Digite seu Nickname" maxlength="15">
+            <button onclick="fazerLogin()">Confirmar</button>
+            <button onclick="fecharModalLogin()" style="background:#555; margin-top:10px;">Cancelar</button>
+        </div>
+    </div>
 
     <div id="game-selector">
         <div class="game-card snake-card" onclick="abrirJogo('snake')">
@@ -244,6 +344,7 @@
         </div>
     </div>
 
+    <!-- TELA SNAKE -->
     <div class="container" id="tela-snake">
         <div id="game-container-snake">
             <canvas id="snakeCanvas" width="600" height="400"></canvas>
@@ -251,8 +352,9 @@
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
+    <!-- TELA HTMLCRAFT -->
     <div class="container" id="tela-htmlcraft">
-        <p style="color:#27ae60; font-weight:bold; margin-top:0;">Use W, A, S, D para andar e Clique para colocar blocos. Clique e arraste para olhar.</p>
+        <p style="color:#27ae60; font-weight:bold; margin-top:0;">Use W, A, S, D para andar e Clique para colocar blocos.</p>
         <div id="game-container-htmlcraft">
             <a-scene embedded>
                 <a-sky color="#87CEEB"></a-sky>
@@ -265,6 +367,7 @@
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
+    <!-- TELA FLAPPY BIRD -->
     <div class="container" id="tela-flappy">
         <div id="game-container-flappy">
             <canvas id="flappyCanvas" width="400" height="500"></canvas>
@@ -275,12 +378,14 @@
             <div id="game-over-menu-flappy" class="menu-overlay hidden">
                 <h2>Você Desviveu!</h2>
                 <p id="final-score-flappy">Placar: 0</p>
+                <p id="high-score-flappy" style="color: #f1c40f; font-weight: bold; margin-bottom: 20px;">Recorde: 0</p>
                 <button id="restart-btn">Reiniciar Jogo</button>
             </div>
         </div>
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
+    <!-- TELA CUBE 2048 -->
     <div class="container" id="tela-cube">
         <div id="game-container-cube">
             <div class="header-cube">
@@ -301,30 +406,28 @@
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
+    <!-- TELA PONG -->
     <div class="container" id="tela-pong">
         <div id="game-container-pong">
             <canvas id="pongCanvas" width="600" height="400"></canvas>
-            
             <div id="menu-pong" class="menu-overlay">
                 <h1>PONG MULTI</h1>
                 <p>Escolha o seu modo de jogo:</p>
                 <button class="pong-menu-btn" onclick="startPong('pc')">Jogador vs PC</button>
                 <button class="pong-menu-btn" onclick="startPong('local')">X1 Local (Teclado)</button>
             </div>
-
             <div id="gameover-pong" class="menu-overlay hidden">
                 <h2 id="winner-text-pong">Fim de Jogo</h2>
-                <p>Quer revanche?</p>
                 <button class="pong-menu-btn danger" onclick="resetPong()">Jogar Novamente</button>
             </div>
         </div>
         <p style="color:#bbb; font-size:0.85rem; margin-top:10px; text-align:center;">
-            <strong>Player 1 (Esquerda):</strong> W (Sobe) / S (Desce)<br>
-            <strong>Player 2 (Direita):</strong> Seta para Cima / Seta para Baixo
+            <strong>Player 1:</strong> W / S | <strong>Player 2:</strong> Setas
         </p>
         <button class="voltar-btn" onclick="voltarAoMenu()">VOLTAR AO MENU</button>
     </div>
 
+    <!-- MURAL DE COMENTÁRIOS -->
     <div class="comments-section" id="comentarios">
         <h3>💬 Mural da Garcia Productions</h3>
         <div class="comment-form">
@@ -339,6 +442,60 @@
         &copy; 2026 Garcia Productions. Todos os direitos reservados.
     </div>
 
+    <!-- SCRIPT DE LOGIN E SESSÃO -->
+    <script>
+        let currentUser = localStorage.getItem('garcia_user');
+
+        function atualizarUIUsuario() {
+            const btnLogin = document.getElementById('btn-abrir-login');
+            const userDisplay = document.getElementById('user-display-name');
+            const btnSair = document.getElementById('btn-sair');
+            const inputNomeComentario = document.getElementById('nome-comentario');
+
+            if (currentUser) {
+                btnLogin.style.display = 'none';
+                userDisplay.innerText = "Olá, " + currentUser;
+                userDisplay.style.display = 'inline';
+                btnSair.style.display = 'inline';
+                
+                // Preenche automaticamente o nome nos comentários e bloqueia edição
+                inputNomeComentario.value = currentUser;
+                inputNomeComentario.disabled = true;
+            } else {
+                btnLogin.style.display = 'inline';
+                userDisplay.style.display = 'none';
+                btnSair.style.display = 'none';
+                
+                inputNomeComentario.value = '';
+                inputNomeComentario.disabled = false;
+            }
+        }
+
+        function abrirModalLogin() { document.getElementById('login-modal').style.display = 'flex'; }
+        function fecharModalLogin() { document.getElementById('login-modal').style.display = 'none'; }
+
+        function fazerLogin() {
+            const nome = document.getElementById('input-username').value.trim();
+            if (nome) {
+                currentUser = nome.replace(/</g, "&lt;"); // Proteção básica
+                localStorage.setItem('garcia_user', currentUser);
+                atualizarUIUsuario();
+                fecharModalLogin();
+            } else {
+                alert("Digite um nome válido!");
+            }
+        }
+
+        function fazerLogout() {
+            localStorage.removeItem('garcia_user');
+            currentUser = null;
+            atualizarUIUsuario();
+        }
+
+        window.addEventListener('DOMContentLoaded', atualizarUIUsuario);
+    </script>
+
+    <!-- CONTROLE DE NAVEGAÇÃO -->
     <script>
         let jogoAtual = 'nenhum';
 
@@ -388,6 +545,7 @@
         }
     </script>
 
+    <!-- COMENTÁRIOS -->
     <script>
         function carregarComentarios() {
             const lista = document.getElementById('lista-comentarios');
@@ -413,183 +571,53 @@
             const dataFormatada = `${agora.toLocaleDateString('pt-BR')} às ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
             comentarios.push({ nome: nomeInput.value.replace(/</g, "&lt;"), texto: textoInput.value.replace(/</g, "&lt;"), data: dataFormatada });
             localStorage.setItem('garcia_comentarios', JSON.stringify(comentarios));
-            nomeInput.value = ''; textoInput.value = '';
+            textoInput.value = '';
+            if (!currentUser) nomeInput.value = ''; // Limpa só se não tiver logado
             carregarComentarios();
         }
         window.addEventListener('DOMContentLoaded', carregarComentarios);
     </script>
 
-    <script>
-        const pongCanvas = document.getElementById("pongCanvas");
-        const ctxPong = pongCanvas.getContext("2d");
-        
-        let pongMode = 'pc'; 
-        let pongRunning = false;
-        let pongAnimationId;
-
-        const paddleWidth = 12, paddleHeight = 80;
-        let p1Y = 160, p2Y = 160;
-        let p1Score = 0, p2Score = 0;
-        const paddleSpeed = 6;
-
-        let ballX = 300, ballY = 200;
-        let ballRadius = 7;
-        let ballSpeedX = 4, ballSpeedY = 4;
-
-        const keysPressed = {};
-
-        function showPongMenu() {
-            stopPongGame();
-            document.getElementById("menu-pong").classList.remove("hidden");
-            document.getElementById("gameover-pong").classList.add("hidden");
-            ctxPong.clearRect(0, 0, pongCanvas.width, pongCanvas.height);
-        }
-
-        function startPong(mode) {
-            pongMode = mode;
-            document.getElementById("menu-pong").classList.add("hidden");
-            document.getElementById("gameover-pong").classList.add("hidden");
-            p1Score = 0; p2Score = 0;
-            resetBall();
-            pongRunning = true;
-            loopPong();
-        }
-
-        function stopPongGame() {
-            pongRunning = false;
-            cancelAnimationFrame(pongAnimationId);
-        }
-
-        function resetBall() {
-            ballX = pongCanvas.width / 2;
-            ballY = pongCanvas.height / 2;
-            ballSpeedX = (Math.random() > 0.5 ? 4 : -4);
-            ballSpeedY = (Math.random() > 0.5 ? 3 : -3);
-        }
-
-        function loopPong() {
-            if (!pongRunning) return;
-            updatePong();
-            drawPong();
-            pongAnimationId = requestAnimationFrame(loopPong);
-        }
-
-        function updatePong() {
-            if (keysPressed['KeyW'] && p1Y > 0) p1Y -= paddleSpeed;
-            if (keysPressed['KeyS'] && p1Y < pongCanvas.height - paddleHeight) p1Y += paddleSpeed;
-
-            if (pongMode === 'local') {
-                if (keysPressed['ArrowUp'] && p2Y > 0) p2Y -= paddleSpeed;
-                if (keysPressed['ArrowDown'] && p2Y < pongCanvas.height - paddleHeight) p2Y += paddleSpeed;
-            } else {
-                // AQUI ESTÁ O NERF DO PC ("CACHORRINHO DO POU" DESTRUIDO!)
-                let p2Center = p2Y + paddleHeight / 2;
-                let velocidadeDoPC = 3.2; // Bem mais lento para dar chance humana
-                
-                if (p2Center < ballY - 25 && p2Y < pongCanvas.height - paddleHeight) p2Y += velocidadeDoPC;
-                else if (p2Center > ballY + 25 && p2Y > 0) p2Y -= velocidadeDoPC;
-            }
-
-            ballX += ballSpeedX;
-            ballY += ballSpeedY;
-
-            if (ballY - ballRadius <= 0 || ballY + ballRadius >= pongCanvas.height) {
-                ballSpeedY = -ballSpeedY;
-            }
-
-            if (ballX - ballRadius <= paddleWidth + 10) {
-                if (ballY >= p1Y && ballY <= p1Y + paddleHeight) {
-                    ballSpeedX = -ballSpeedX;
-                    ballSpeedX *= 1.05; 
-                } else if (ballX < 0) {
-                    p2Score++;
-                    checkPongWinner();
-                }
-            }
-
-            if (ballX + ballRadius >= pongCanvas.width - paddleWidth - 10) {
-                if (ballY >= p2Y && ballY <= p2Y + paddleHeight) {
-                    ballSpeedX = -ballSpeedX;
-                    ballSpeedX *= 1.05;
-                } else if (ballX > pongCanvas.width) {
-                    p1Score++;
-                    checkPongWinner();
-                }
-            }
-        }
-
-        function checkPongWinner() {
-            if (p1Score >= 5 || p2Score >= 5) {
-                pongRunning = false;
-                let text = p1Score >= 5 ? "PLAYER 1 GANHOU!" : (pongMode === 'pc' ? "O COMPUTADOR GANHOU!" : "PLAYER 2 GANHOU!");
-                document.getElementById("winner-text-pong").innerText = text;
-                document.getElementById("gameover-pong").classList.remove("hidden");
-            } else {
-                resetBall();
-            }
-        }
-
-        function drawPong() {
-            ctxPong.fillStyle = "#000";
-            ctxPong.fillRect(0, 0, pongCanvas.width, pongCanvas.height);
-
-            ctxPong.strokeStyle = "rgba(255,255,255,0.2)";
-            ctxPong.lineWidth = 2;
-            ctxPong.setLineDash([10, 10]);
-            ctxPong.beginPath(); ctxPong.moveTo(300, 0); ctxPong.lineTo(300, 400); ctxPong.stroke();
-            ctxPong.setLineDash([]);
-
-            ctxPong.fillStyle = "#fff";
-            ctxPong.fillRect(10, p1Y, paddleWidth, paddleHeight);
-            ctxPong.fillRect(pongCanvas.width - paddleWidth - 10, p2Y, paddleWidth, paddleHeight);
-
-            ctxPong.fillStyle = "#e74c3c";
-            ctxPong.beginPath();
-            ctxPong.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-            ctxPong.fill();
-
-            ctxPong.fillStyle = "#fff";
-            ctxPong.font = "bold 30px Arial";
-            ctxPong.fillText(p1Score, 250, 50);
-            ctxPong.fillText(p2Score, 330, 50);
-        }
-
-        function resetPong() {
-            startPong(pongMode);
-        }
-
-        window.addEventListener('keydown', (e) => {
-            keysPressed[e.code] = true;
-        });
-        window.addEventListener('keyup', (e) => {
-            keysPressed[e.code] = false;
-        });
-    </script>
-
-    <script>
-        const boardSizeCube = 4; let gridCube = []; let scoreCube = 0;
-        const boardElementCube = document.getElementById('board-cube');
-        const scoreElementCube = document.getElementById('score-cube');
-        const gameOverElementCube = document.getElementById('game-over-cube');
-        function initCubeGame() { gridCube = Array(boardSizeCube).fill().map(() => Array(boardSizeCube).fill(0)); scoreCube = 0; updateScoreCube(0); gameOverElementCube.style.display = 'none'; document.querySelectorAll('.tile-cube').forEach(t => t.remove()); addRandomTileCube(); addRandomTileCube(); drawTilesCube(); }
-        function addRandomTileCube() { let emptyCells = []; for (let r = 0; r < boardSizeCube; r++) { for (let c = 0; c < boardSizeCube; c++) { if (gridCube[r][c] === 0) emptyCells.push({r, c}); } } if (emptyCells.length > 0) { let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)]; gridCube[randomCell.r][randomCell.c] = Math.random() < 0.9 ? 2 : 4; } }
-        function drawTilesCube() { document.querySelectorAll('.tile-cube').forEach(t => t.remove()); for (let r = 0; r < boardSizeCube; r++) { for (let c = 0; c < boardSizeCube; c++) { if (gridCube[r][c] !== 0) { let tile = document.createElement('div'); tile.classList.add('tile-cube', `tc-${gridCube[r][c]}`); tile.innerText = gridCube[r][c]; let x = 10 + c * (77.5 + 10); let y = 10 + r * (77.5 + 10); tile.style.transform = `translate(${x}px, ${y}px)`; boardElementCube.appendChild(tile); } } } }
-        function updateScoreCube(points) { scoreCube += points; scoreElementCube.innerText = scoreCube; }
-        function slideCube(row) { let filteredRow = row.filter(val => val !== 0); for (let i = 0; i < filteredRow.length - 1; i++) { if (filteredRow[i] === filteredRow[i+1]) { filteredRow[i] *= 2; updateScoreCube(filteredRow[i]); filteredRow.splice(i + 1, 1); } } while (filteredRow.length < boardSizeCube) { filteredRow.push(0); } return filteredRow; }
-        function moveCubeLeft() { let moved = false; for (let r = 0; r < boardSizeCube; r++) { let oldRow = gridCube[r]; let newRow = slideCube(gridCube[r]); gridCube[r] = newRow; if (oldRow.join(',') !== newRow.join(',')) moved = true; } return moved; }
-        function moveCubeRight() { let moved = false; for (let r = 0; r < boardSizeCube; r++) { let oldRow = gridCube[r]; let reversedRow = oldRow.slice().reverse(); let newRow = slideCube(reversedRow).reverse(); gridCube[r] = newRow; if (oldRow.join(',') !== newRow.join(',')) moved = true; } return moved; }
-        function moveCubeUp() { let moved = false; for (let c = 0; c < boardSizeCube; c++) { let column = [gridCube[0][c], gridCube[1][c], gridCube[2][c], gridCube[3][c]]; let newColumn = slideCube(column); for (let r = 0; r < boardSizeCube; r++) { if (gridCube[r][c] !== newColumn[r]) moved = true; gridCube[r][c] = newColumn[r]; } } return moved; }
-        function moveCubeDown() { let moved = false; for (let c = 0; c < boardSizeCube; c++) { let column = [gridCube[3][c], gridCube[2][c], gridCube[1][c], gridCube[0][c]]; let newColumn = slideCube(column); newColumn.reverse(); for (let r = 0; r < boardSizeCube; r++) { if (gridCube[r][c] !== newColumn[r]) moved = true; gridCube[r][c] = newColumn[r]; } } return moved; }
-        function checkGameOverCube() { for (let r = 0; r < boardSizeCube; r++) { for (let c = 0; c < boardSizeCube; c++) { if (gridCube[r][c] === 0) return false; if (c < boardSizeCube - 1 && gridCube[r][c] === gridCube[r][c+1]) return false; if (r < boardSizeCube - 1 && gridCube[r][c] === gridCube[r+1][c]) return false; } } gameOverElementCube.style.display = 'flex'; return true; }
-        function resetCube() { initCubeGame(); }
-    </script>
-
+    <!-- SCRIPT DO SNAKE GAME (COM RECORDE) -->
     <script>
         const snakeCanvas = document.getElementById("snakeCanvas"); const ctxSnake = snakeCanvas.getContext("2d");
         const TAMANHO_BLOCO = 20; const VELOCIDADE_SNAKE = 100; let estadoJogoSnake = 'MENU'; let cobra = []; let direcaoX = TAMANHO_BLOCO; let direcaoY = 0; let comida = {x: 0, y: 0}; let pontuacaoSnake = 0; let mudouDirecaoNesteFrame = false; let loopSnakeRodando = false;
+        
+        let recordeSnake = localStorage.getItem('garcia_recorde_snake') || 0;
+
         function iniciarJogoSnake() { let inicioX = snakeCanvas.width / 2; let inicioY = snakeCanvas.height / 2; cobra = [{x: inicioX, y: inicioY}, {x: inicioX - TAMANHO_BLOCO, y: inicioY}]; direcaoX = TAMANHO_BLOCO; direcaoY = 0; pontuacaoSnake = 0; gerarComidaSnake(); estadoJogoSnake = 'JOGANDO'; }
         function gerarComidaSnake() { while (true) { let x = Math.floor(Math.random() * (snakeCanvas.width / TAMANHO_BLOCO)) * TAMANHO_BLOCO; let y = Math.floor(Math.random() * (snakeCanvas.height / TAMANHO_BLOCO)) * TAMANHO_BLOCO; if (!cobra.some(b => b.x === x && b.y === y)) { comida = {x: x, y: y}; break; } } }
-        function loopSnake() { mudouDirecaoNesteFrame = false; if (estadoJogoSnake === 'MENU') { ctxSnake.fillStyle = "#1e1e1e"; ctxSnake.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height); ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 35px Arial"; ctxSnake.textAlign = "center"; ctxSnake.fillText("SNAKE GAME", snakeCanvas.width / 2, 160); ctxSnake.fillStyle = "#3498db"; ctxSnake.fillRect(snakeCanvas.width / 2 - 90, 250, 180, 50); ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 20px Arial"; ctxSnake.fillText("PLAY NOW!", snakeCanvas.width / 2, 282); } else if (estadoJogoSnake === 'JOGANDO') { let novaCabeca = {x: cobra[0].x + direcaoX, y: cobra[0].y + direcaoY}; if (novaCabeca.x < 0 || novaCabeca.x >= snakeCanvas.width || novaCabeca.y < 0 || novaCabeca.y >= snakeCanvas.height || cobra.some(b => b.x === novaCabeca.x && b.y === novaCabeca.y)) { estadoJogoSnake = 'GAMEOVER'; setTimeout(loopSnake, VELOCIDADE_SNAKE); return; } cobra.unshift(novaCabeca); if (novaCabeca.x === comida.x && novaCabeca.y === comida.y) { pontuacaoSnake++; gerarComidaSnake(); } else { cobra.pop(); } for (let linha = 0; linha < snakeCanvas.height/TAMANHO_BLOCO; linha++) { for (let col = 0; col < snakeCanvas.width/TAMANHO_BLOCO; col++) { ctxSnake.fillStyle = (linha + col) % 2 === 0 ? "#aaf751" : "#a2d149"; ctxSnake.fillRect(col * TAMANHO_BLOCO, linha * TAMANHO_BLOCO, TAMANHO_BLOCO, TAMANHO_BLOCO); } } ctxSnake.fillStyle = "#ed1c24"; ctxSnake.beginPath(); ctxSnake.arc(comida.x + 10, comida.y + 10, 10, 0, 2 * Math.PI); ctxSnake.fill(); cobra.forEach((bloco, i) => { ctxSnake.fillStyle = "#000000"; ctxSnake.beginPath(); ctxSnake.arc(bloco.x + 10, bloco.y + 10, 10, 0, 2 * Math.PI); ctxSnake.fill(); ctxSnake.fillStyle = "#3f48cc"; ctxSnake.beginPath(); ctxSnake.arc(bloco.x + 10, bloco.y + 10, 9, 0, 2 * Math.PI); ctxSnake.fill(); }); ctxSnake.textAlign = "left"; ctxSnake.font = "bold 22px Arial"; ctxSnake.fillStyle = "#ffffff"; ctxSnake.fillText(`PONTOS: ${pontuacaoSnake}`, 15, 30); } else if (estadoJogoSnake === 'GAMEOVER') { ctxSnake.fillStyle = "#1e1e1e"; ctxSnake.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height); ctxSnake.fillStyle = "#ed1c24"; ctxSnake.font = "bold 40px Arial"; ctxSnake.textAlign = "center"; ctxSnake.fillText("GAME OVER", snakeCanvas.width / 2, 130); ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 22px Arial"; ctxSnake.fillText(`PONTOS: ${pontuacaoSnake}`, snakeCanvas.width / 2, 190); ctxSnake.fillStyle = "#3498db"; ctxSnake.fillRect(snakeCanvas.width / 2 - 90, 240, 180, 50); ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 20px Arial"; ctxSnake.fillText("REINICIAR", snakeCanvas.width / 2, 272); } setTimeout(loopSnake, VELOCIDADE_SNAKE); }
+        
+        function loopSnake() { 
+            mudouDirecaoNesteFrame = false; 
+            if (estadoJogoSnake === 'MENU') { 
+                ctxSnake.fillStyle = "#1e1e1e"; ctxSnake.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height); ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 35px Arial"; ctxSnake.textAlign = "center"; ctxSnake.fillText("SNAKE GAME", snakeCanvas.width / 2, 160); ctxSnake.fillStyle = "#3498db"; ctxSnake.fillRect(snakeCanvas.width / 2 - 90, 250, 180, 50); ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 20px Arial"; ctxSnake.fillText("PLAY NOW!", snakeCanvas.width / 2, 282); 
+            } else if (estadoJogoSnake === 'JOGANDO') { 
+                let novaCabeca = {x: cobra[0].x + direcaoX, y: cobra[0].y + direcaoY}; 
+                if (novaCabeca.x < 0 || novaCabeca.x >= snakeCanvas.width || novaCabeca.y < 0 || novaCabeca.y >= snakeCanvas.height || cobra.some(b => b.x === novaCabeca.x && b.y === novaCabeca.y)) { 
+                    // Checa Recorde ao morrer
+                    if (pontuacaoSnake > recordeSnake) {
+                        recordeSnake = pontuacaoSnake;
+                        localStorage.setItem('garcia_recorde_snake', recordeSnake);
+                    }
+                    estadoJogoSnake = 'GAMEOVER'; setTimeout(loopSnake, VELOCIDADE_SNAKE); return; 
+                } 
+                cobra.unshift(novaCabeca); if (novaCabeca.x === comida.x && novaCabeca.y === comida.y) { pontuacaoSnake++; gerarComidaSnake(); } else { cobra.pop(); } 
+                for (let linha = 0; linha < snakeCanvas.height/TAMANHO_BLOCO; linha++) { for (let col = 0; col < snakeCanvas.width/TAMANHO_BLOCO; col++) { ctxSnake.fillStyle = (linha + col) % 2 === 0 ? "#aaf751" : "#a2d149"; ctxSnake.fillRect(col * TAMANHO_BLOCO, linha * TAMANHO_BLOCO, TAMANHO_BLOCO, TAMANHO_BLOCO); } } 
+                ctxSnake.fillStyle = "#ed1c24"; ctxSnake.beginPath(); ctxSnake.arc(comida.x + 10, comida.y + 10, 10, 0, 2 * Math.PI); ctxSnake.fill(); 
+                cobra.forEach((bloco, i) => { ctxSnake.fillStyle = "#000000"; ctxSnake.beginPath(); ctxSnake.arc(bloco.x + 10, bloco.y + 10, 10, 0, 2 * Math.PI); ctxSnake.fill(); ctxSnake.fillStyle = "#3f48cc"; ctxSnake.beginPath(); ctxSnake.arc(bloco.x + 10, bloco.y + 10, 9, 0, 2 * Math.PI); ctxSnake.fill(); }); 
+                
+                // Exibe Placar e Recorde durante o jogo
+                ctxSnake.textAlign = "left"; ctxSnake.font = "bold 20px Arial"; ctxSnake.fillStyle = "#ffffff"; 
+                ctxSnake.fillText(`PONTOS: ${pontuacaoSnake}`, 15, 30);
+                ctxSnake.textAlign = "right"; ctxSnake.fillStyle = "#f1c40f";
+                ctxSnake.fillText(`RECORDE: ${recordeSnake}`, snakeCanvas.width - 15, 30);
+            
+            } else if (estadoJogoSnake === 'GAMEOVER') { 
+                ctxSnake.fillStyle = "#1e1e1e"; ctxSnake.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height); ctxSnake.fillStyle = "#ed1c24"; ctxSnake.font = "bold 40px Arial"; ctxSnake.textAlign = "center"; ctxSnake.fillText("GAME OVER", snakeCanvas.width / 2, 130); ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 22px Arial"; ctxSnake.fillText(`PONTOS: ${pontuacaoSnake}`, snakeCanvas.width / 2, 190); ctxSnake.fillStyle = "#f1c40f"; ctxSnake.fillText(`RECORDE: ${recordeSnake}`, snakeCanvas.width / 2, 220); ctxSnake.fillStyle = "#3498db"; ctxSnake.fillRect(snakeCanvas.width / 2 - 90, 260, 180, 50); ctxSnake.fillStyle = "#ffffff"; ctxSnake.font = "bold 20px Arial"; ctxSnake.fillText("REINICIAR", snakeCanvas.width / 2, 292); 
+            } 
+            setTimeout(loopSnake, VELOCIDADE_SNAKE); 
+        }
 
         window.addEventListener("keydown", function(e) {
             if (jogoAtual === 'snake') {
@@ -599,34 +627,35 @@
                 else if (e.key === "ArrowDown" && direcaoY === 0) { direcaoX = 0; direcaoY = TAMANHO_BLOCO; mudouDirecaoNesteFrame = true; } 
                 else if (e.key === "ArrowLeft" && direcaoX === 0) { direcaoX = -TAMANHO_BLOCO; direcaoY = 0; mudouDirecaoNesteFrame = true; } 
                 else if (e.key === "ArrowRight" && direcaoX === 0) { direcaoX = TAMANHO_BLOCO; direcaoY = 0; mudouDirecaoNesteFrame = true; }
-            } else if (jogoAtual === 'cube') {
-                if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.key) > -1) e.preventDefault();
-                if (gameOverElementCube.style.display === 'flex') return;
-                let moved = false;
-                if (e.key === 'ArrowLeft') moved = moveCubeLeft();
-                else if (e.key === 'ArrowRight') moved = moveCubeRight();
-                else if (e.key === 'ArrowUp') moved = moveCubeUp();
-                else if (e.key === 'ArrowDown') moved = moveCubeDown();
-                if (moved) { addRandomTileCube(); drawTilesCube(); checkGameOverCube(); }
-            } else if (jogoAtual === 'pong') {
-                if(["ArrowUp","ArrowDown"].indexOf(e.key) > -1) e.preventDefault();
             }
         });
-
-        snakeCanvas.addEventListener("click", function(e) {
-            const rect = snakeCanvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left; const mouseY = e.clientY - rect.top;
-            if ((estadoJogoSnake === 'MENU' || estadoJogoSnake === 'GAMEOVER') && mouseX >= snakeCanvas.width/2 - 90 && mouseX <= snakeCanvas.width/2 + 90 && mouseY >= 240 && mouseY <= 300) { iniciarJogoSnake(); }
-        });
+        snakeCanvas.addEventListener("click", function(e) { const rect = snakeCanvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left; const mouseY = e.clientY - rect.top; if ((estadoJogoSnake === 'MENU' || estadoJogoSnake === 'GAMEOVER') && mouseX >= snakeCanvas.width/2 - 90 && mouseX <= snakeCanvas.width/2 + 90 && mouseY >= 250 && mouseY <= 310) { iniciarJogoSnake(); } });
         function iniciarLoopSnakeSeNecessario() { if (!loopSnakeRodando) { loopSnakeRodando = true; loopSnake(); } }
     </script>
 
+    <!-- SCRIPT DO FLAPPY BIRD (COM RECORDE) -->
     <script>
         const flappyCanvas = document.getElementById("flappyCanvas"); const ctxFlappy = flappyCanvas.getContext("2d");
-        const startMenuFlappy = document.getElementById("start-menu-flappy"); const gameOverMenuFlappy = document.getElementById("game-over-menu-flappy"); const finalScoreTextFlappy = document.getElementById("final-score-flappy");
+        const startMenuFlappy = document.getElementById("start-menu-flappy"); const gameOverMenuFlappy = document.getElementById("game-over-menu-flappy"); 
+        const finalScoreTextFlappy = document.getElementById("final-score-flappy"); const highScoreTextFlappy = document.getElementById("high-score-flappy");
+        
         let framesFlappy = 0; let scoreFlappy = 0; let gameStateFlappy = 'START'; let loopFlappyRodando = false;
+        let recordeFlappy = localStorage.getItem('garcia_recorde_flappy') || 0;
+
         const bird = { x: 60, y: 250, radius: 12, gravity: 0.6, velocity: 0, jump: -8, rotation: 0, draw() { ctxFlappy.save(); ctxFlappy.translate(this.x, this.y); this.rotation = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, (this.velocity * 0.1))); ctxFlappy.rotate(this.rotation); ctxFlappy.fillStyle = "#f1c40f"; ctxFlappy.beginPath(); ctxFlappy.arc(0, 0, this.radius, 0, Math.PI * 2); ctxFlappy.fill(); ctxFlappy.stroke(); ctxFlappy.fillStyle = "#f39c12"; ctxFlappy.beginPath(); ctxFlappy.ellipse(-4, 2, 6, 4, 0, 0, Math.PI * 2); ctxFlappy.fill(); ctxFlappy.fillStyle = "white"; ctxFlappy.beginPath(); ctxFlappy.arc(4, -4, 4, 0, Math.PI * 2); ctxFlappy.fill(); ctxFlappy.fillStyle = "black"; ctxFlappy.beginPath(); ctxFlappy.arc(5, -4, 2, 0, Math.PI * 2); ctxFlappy.fill(); ctxFlappy.fillStyle = "#e67e22"; ctxFlappy.beginPath(); ctxFlappy.moveTo(8, 0); ctxFlappy.lineTo(18, 2); ctxFlappy.lineTo(8, 6); ctxFlappy.fill(); ctxFlappy.restore(); }, update() { this.velocity += this.gravity; this.y += this.velocity; if (this.y + this.radius >= flappyCanvas.height) { this.y = flappyCanvas.height - this.radius; triggerGameOverFlappy(); } if (this.y - this.radius <= 0) { this.y = this.radius; this.velocity = 0; } }, flap() { this.velocity = this.jump; } };
         const pipes = { position: [], width: 50, gap: 140, dx: 3, draw() { for (let i = 0; i < this.position.length; i++) { let p = this.position[i]; let topY = p.y; let bottomY = p.y + this.gap; let gradient = ctxFlappy.createLinearGradient(p.x, 0, p.x + this.width, 0); gradient.addColorStop(0, "#27ae60"); gradient.addColorStop(0.5, "#2ecc71"); gradient.addColorStop(1, "#229954"); ctxFlappy.fillStyle = gradient; ctxFlappy.lineWidth = 2; ctxFlappy.strokeStyle = "#145a32"; ctxFlappy.fillRect(p.x, 0, this.width, topY); ctxFlappy.strokeRect(p.x, 0, this.width, topY); ctxFlappy.fillRect(p.x - 2, topY - 20, this.width + 4, 20); ctxFlappy.strokeRect(p.x - 2, topY - 20, this.width + 4, 20); ctxFlappy.fillRect(p.x, bottomY, this.width, flappyCanvas.height - bottomY); ctxFlappy.strokeRect(p.x, bottomY, this.width, flappyCanvas.height - bottomY); ctxFlappy.fillRect(p.x - 2, bottomY, this.width + 4, 20); ctxFlappy.strokeRect(p.x - 2, bottomY, this.width + 4, 20); } }, update() { if (framesFlappy % 90 === 0) { this.position.push({ x: flappyCanvas.width, y: Math.max(50, Math.random() * (flappyCanvas.height - this.gap - 100)), passed: false }); } for (let i = 0; i < this.position.length; i++) { let p = this.position[i]; p.x -= this.dx; let pDireita = bird.x + bird.radius; let pEsquerda = bird.x - bird.radius; let pCima = bird.y - bird.radius; let pBaixo = bird.y + bird.radius; if (pDireita > p.x && pEsquerda < p.x + this.width && (pCima < p.y || pBaixo > p.y + this.gap)) { triggerGameOverFlappy(); } if (!p.passed && p.x + this.width < bird.x - bird.radius) { scoreFlappy++; p.passed = true; } if (p.x + this.width <= 0) { this.position.shift(); i--; } } } };
-        function triggerGameOverFlappy() { gameStateFlappy = 'GAMEOVER'; finalScoreTextFlappy.innerText = `Placar Final: ${scoreFlappy}`; gameOverMenuFlappy.classList.remove("hidden"); }
+        
+        function triggerGameOverFlappy() { 
+            gameStateFlappy = 'GAMEOVER'; 
+            if (scoreFlappy > recordeFlappy) {
+                recordeFlappy = scoreFlappy;
+                localStorage.setItem('garcia_recorde_flappy', recordeFlappy);
+            }
+            finalScoreTextFlappy.innerText = `Placar Final: ${scoreFlappy}`; 
+            highScoreTextFlappy.innerText = `Recorde: ${recordeFlappy}`;
+            gameOverMenuFlappy.classList.remove("hidden"); 
+        }
+
         function resetFlappy() { bird.y = 250; bird.velocity = 0; bird.rotation = 0; pipes.position = []; scoreFlappy = 0; framesFlappy = 0; gameStateFlappy = 'PLAYING'; gameOverMenuFlappy.classList.add("hidden"); startMenuFlappy.classList.add("hidden"); }
         function handleInputFlappy() { if (document.getElementById('tela-flappy').style.display !== 'flex') return; if (gameStateFlappy === 'START') { resetFlappy(); bird.flap(); } else if (gameStateFlappy === 'PLAYING') { bird.flap(); } }
         function loopFlappy() { if (document.getElementById('tela-flappy').style.display !== 'flex') { requestAnimationFrame(loopFlappy); return; } if (gameStateFlappy === 'PLAYING') { bird.update(); pipes.update(); } ctxFlappy.clearRect(0, 0, flappyCanvas.width, flappyCanvas.height); pipes.draw(); bird.draw(); if (gameStateFlappy === 'PLAYING') { ctxFlappy.fillStyle = "white"; ctxFlappy.strokeStyle = "black"; ctxFlappy.lineWidth = 4; ctxFlappy.font = "bold 40px 'Segoe UI'"; ctxFlappy.strokeText(scoreFlappy, flappyCanvas.width / 2 - 10, 50); ctxFlappy.fillText(scoreFlappy, flappyCanvas.width / 2 - 10, 50); } framesFlappy++; requestAnimationFrame(loopFlappy); }
@@ -634,6 +663,15 @@
         document.getElementById("game-container-flappy").addEventListener("mousedown", (e) => { if (e.target.id !== "restart-btn") handleInputFlappy(); });
         document.getElementById("restart-btn").addEventListener("click", resetFlappy);
         function iniciarLoopFlappySeNecessario() { if (!loopFlappyRodando) { loopFlappyRodando = true; loopFlappy(); } }
+    </script>
+
+    <!-- SCRIPT CUBE 2048 E PONG MANTIDOS IGUAIS (OCULTOS PARA POUPAR ESPAÇO, USE OS MESMOS DA VERSÃO ANTERIOR) -->
+    <script>
+        // CUBE 2048
+        const boardSizeCube = 4; let gridCube = []; let scoreCube = 0; const boardElementCube = document.getElementById('board-cube'); const scoreElementCube = document.getElementById('score-cube'); const gameOverElementCube = document.getElementById('game-over-cube'); function initCubeGame() { gridCube = Array(boardSizeCube).fill().map(() => Array(boardSizeCube).fill(0)); scoreCube = 0; updateScoreCube(0); gameOverElementCube.style.display = 'none'; document.querySelectorAll('.tile-cube').forEach(t => t.remove()); addRandomTileCube(); addRandomTileCube(); drawTilesCube(); } function addRandomTileCube() { let emptyCells = []; for (let r = 0; r < boardSizeCube; r++) { for (let c = 0; c < boardSizeCube; c++) { if (gridCube[r][c] === 0) emptyCells.push({r, c}); } } if (emptyCells.length > 0) { let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)]; gridCube[randomCell.r][randomCell.c] = Math.random() < 0.9 ? 2 : 4; } } function drawTilesCube() { document.querySelectorAll('.tile-cube').forEach(t => t.remove()); for (let r = 0; r < boardSizeCube; r++) { for (let c = 0; c < boardSizeCube; c++) { if (gridCube[r][c] !== 0) { let tile = document.createElement('div'); tile.classList.add('tile-cube', `tc-${gridCube[r][c]}`); tile.innerText = gridCube[r][c]; let x = 10 + c * (77.5 + 10); let y = 10 + r * (77.5 + 10); tile.style.transform = `translate(${x}px, ${y}px)`; boardElementCube.appendChild(tile); } } } } function updateScoreCube(points) { scoreCube += points; scoreElementCube.innerText = scoreCube; } function slideCube(row) { let filteredRow = row.filter(val => val !== 0); for (let i = 0; i < filteredRow.length - 1; i++) { if (filteredRow[i] === filteredRow[i+1]) { filteredRow[i] *= 2; updateScoreCube(filteredRow[i]); filteredRow.splice(i + 1, 1); } } while (filteredRow.length < boardSizeCube) { filteredRow.push(0); } return filteredRow; } function moveCubeLeft() { let moved = false; for (let r = 0; r < boardSizeCube; r++) { let oldRow = gridCube[r]; let newRow = slideCube(gridCube[r]); gridCube[r] = newRow; if (oldRow.join(',') !== newRow.join(',')) moved = true; } return moved; } function moveCubeRight() { let moved = false; for (let r = 0; r < boardSizeCube; r++) { let oldRow = gridCube[r]; let reversedRow = oldRow.slice().reverse(); let newRow = slideCube(reversedRow).reverse(); gridCube[r] = newRow; if (oldRow.join(',') !== newRow.join(',')) moved = true; } return moved; } function moveCubeUp() { let moved = false; for (let c = 0; c < boardSizeCube; c++) { let column = [gridCube[0][c], gridCube[1][c], gridCube[2][c], gridCube[3][c]]; let newColumn = slideCube(column); for (let r = 0; r < boardSizeCube; r++) { if (gridCube[r][c] !== newColumn[r]) moved = true; gridCube[r][c] = newColumn[r]; } } return moved; } function moveCubeDown() { let moved = false; for (let c = 0; c < boardSizeCube; c++) { let column = [gridCube[3][c], gridCube[2][c], gridCube[1][c], gridCube[0][c]]; let newColumn = slideCube(column); newColumn.reverse(); for (let r = 0; r < boardSizeCube; r++) { if (gridCube[r][c] !== newColumn[r]) moved = true; gridCube[r][c] = newColumn[r]; } } return moved; } function checkGameOverCube() { for (let r = 0; r < boardSizeCube; r++) { for (let c = 0; c < boardSizeCube; c++) { if (gridCube[r][c] === 0) return false; if (c < boardSizeCube - 1 && gridCube[r][c] === gridCube[r][c+1]) return false; if (r < boardSizeCube - 1 && gridCube[r][c] === gridCube[r+1][c]) return false; } } gameOverElementCube.style.display = 'flex'; return true; } function resetCube() { initCubeGame(); }
+        
+        // PONG
+        const pongCanvas = document.getElementById("pongCanvas"); const ctxPong = pongCanvas.getContext("2d"); let pongMode = 'pc'; let pongRunning = false; let pongAnimationId; const paddleWidth = 12, paddleHeight = 80; let p1Y = 160, p2Y = 160; let p1Score = 0, p2Score = 0; const paddleSpeed = 6; let ballX = 300, ballY = 200; let ballRadius = 7; let ballSpeedX = 4, ballSpeedY = 4; const keysPressed = {}; function showPongMenu() { stopPongGame(); document.getElementById("menu-pong").classList.remove("hidden"); document.getElementById("gameover-pong").classList.add("hidden"); ctxPong.clearRect(0, 0, pongCanvas.width, pongCanvas.height); } function startPong(mode) { pongMode = mode; document.getElementById("menu-pong").classList.add("hidden"); document.getElementById("gameover-pong").classList.add("hidden"); p1Score = 0; p2Score = 0; resetBall(); pongRunning = true; loopPong(); } function stopPongGame() { pongRunning = false; cancelAnimationFrame(pongAnimationId); } function resetBall() { ballX = pongCanvas.width / 2; ballY = pongCanvas.height / 2; ballSpeedX = (Math.random() > 0.5 ? 4 : -4); ballSpeedY = (Math.random() > 0.5 ? 3 : -3); } function loopPong() { if (!pongRunning) return; updatePong(); drawPong(); pongAnimationId = requestAnimationFrame(loopPong); } function updatePong() { if (keysPressed['KeyW'] && p1Y > 0) p1Y -= paddleSpeed; if (keysPressed['KeyS'] && p1Y < pongCanvas.height - paddleHeight) p1Y += paddleSpeed; if (pongMode === 'local') { if (keysPressed['ArrowUp'] && p2Y > 0) p2Y -= paddleSpeed; if (keysPressed['ArrowDown'] && p2Y < pongCanvas.height - paddleHeight) p2Y += paddleSpeed; } else { let p2Center = p2Y + paddleHeight / 2; let velocidadeDoPC = 3.2; if (p2Center < ballY - 25 && p2Y < pongCanvas.height - paddleHeight) p2Y += velocidadeDoPC; else if (p2Center > ballY + 25 && p2Y > 0) p2Y -= velocidadeDoPC; } ballX += ballSpeedX; ballY += ballSpeedY; if (ballY - ballRadius <= 0 || ballY + ballRadius >= pongCanvas.height) { ballSpeedY = -ballSpeedY; } if (ballX - ballRadius <= paddleWidth + 10) { if (ballY >= p1Y && ballY <= p1Y + paddleHeight) { ballSpeedX = -ballSpeedX; ballSpeedX *= 1.05; } else if (ballX < 0) { p2Score++; checkPongWinner(); } } if (ballX + ballRadius >= pongCanvas.width - paddleWidth - 10) { if (ballY >= p2Y && ballY <= p2Y + paddleHeight) { ballSpeedX = -ballSpeedX; ballSpeedX *= 1.05; } else if (ballX > pongCanvas.width) { p1Score++; checkPongWinner(); } } } function checkPongWinner() { if (p1Score >= 5 || p2Score >= 5) { pongRunning = false; let text = p1Score >= 5 ? "PLAYER 1 GANHOU!" : (pongMode === 'pc' ? "O COMPUTADOR GANHOU!" : "PLAYER 2 GANHOU!"); document.getElementById("winner-text-pong").innerText = text; document.getElementById("gameover-pong").classList.remove("hidden"); } else { resetBall(); } } function drawPong() { ctxPong.fillStyle = "#000"; ctxPong.fillRect(0, 0, pongCanvas.width, pongCanvas.height); ctxPong.strokeStyle = "rgba(255,255,255,0.2)"; ctxPong.lineWidth = 2; ctxPong.setLineDash([10, 10]); ctxPong.beginPath(); ctxPong.moveTo(300, 0); ctxPong.lineTo(300, 400); ctxPong.stroke(); ctxPong.setLineDash([]); ctxPong.fillStyle = "#fff"; ctxPong.fillRect(10, p1Y, paddleWidth, paddleHeight); ctxPong.fillRect(pongCanvas.width - paddleWidth - 10, p2Y, paddleWidth, paddleHeight); ctxPong.fillStyle = "#e74c3c"; ctxPong.beginPath(); ctxPong.arc(ballX, ballY, ballRadius, 0, Math.PI * 2); ctxPong.fill(); ctxPong.fillStyle = "#fff"; ctxPong.font = "bold 30px Arial"; ctxPong.fillText(p1Score, 250, 50); ctxPong.fillText(p2Score, 330, 50); } function resetPong() { startPong(pongMode); } window.addEventListener('keydown', (e) => { keysPressed[e.code] = true; if (jogoAtual === 'cube' && ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.key) > -1) { e.preventDefault(); if (gameOverElementCube.style.display === 'flex') return; let moved = false; if (e.key === 'ArrowLeft') moved = moveCubeLeft(); else if (e.key === 'ArrowRight') moved = moveCubeRight(); else if (e.key === 'ArrowUp') moved = moveCubeUp(); else if (e.key === 'ArrowDown') moved = moveCubeDown(); if (moved) { addRandomTileCube(); drawTilesCube(); checkGameOverCube(); } } else if (jogoAtual === 'pong' && ["ArrowUp","ArrowDown"].indexOf(e.key) > -1) { e.preventDefault(); } }); window.addEventListener('keyup', (e) => { keysPressed[e.code] = false; });
     </script>
 </body>
 </html>
