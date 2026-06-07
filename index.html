@@ -346,10 +346,21 @@
             }
         }
 
-        async function salvarRecordeNoFirebase(jogo, pontos) {
+async function salvarRecordeNoFirebase(jogo, pontos) {
             if(!firebaseEstaConfigurado() || !currentUser) return;
-            const rankingRef = window.push(window.ref(window.db, 'ranking_' + jogo));
-            await window.set(rankingRef, { jogador: currentUser, score: pontos, timestamp: Date.now() });
+            
+            // Usa o seu nickname como "pasta" única para não duplicar
+            const nomeSeguro = currentUser.replace(/[.#$\[\]]/g, "_");
+            const rankingRef = window.ref(window.db, 'ranking_' + jogo + '/' + nomeSeguro);
+            
+            // Lê o banco rapidinho para ver se a nova pontuação é maior que a antiga
+            window.onValue(rankingRef, (snapshot) => {
+                const recordeAtual = snapshot.val();
+                // Só salva se for a primeira vez jogando OU se quebrou o próprio recorde!
+                if (!recordeAtual || pontos > recordeAtual.score) {
+                    window.set(rankingRef, { jogador: currentUser, score: pontos, timestamp: Date.now() });
+                }
+            }, { onlyOnce: true });
         }
 
         function sincronizarRankingMundial(jogo, elementId) {
